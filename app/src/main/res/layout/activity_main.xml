@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_coordinatorlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context=".activity.MainActivity">
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/main_drawerlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/main_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/main_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/transparent"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/main_top_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/main_viewpager"
+                app:layout_constraintGuide_begin="?attr/actionBarSize"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/main_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/main_ratingbar"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_top_guideline" />
+
+            <RatingBar
+                android:id="@+id/main_ratingbar"
+                style="@style/RatingBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:elevation="25dp"
+                android:numStars="5"
+                android:stepSize="1.0"
+                android:translationZ="25dp"
+                app:layout_constraintBottom_toTopOf="@id/main_ib_play"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_viewpager" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/bg_main_control"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_ratingbar" />
+
+            <ImageButton
+                android:id="@+id/main_ib_repeat"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/selector_button_round"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_repeat_none"
+                app:layout_constraintBottom_toBottomOf="@id/main_ib_prev"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/main_ib_prev"
+                app:layout_constraintTop_toTopOf="@id/main_ib_prev" />
+
+            <ImageButton
+                android:id="@+id/main_ib_prev"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:background="@drawable/selector_button_round"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_prev"
+                app:layout_constraintBottom_toBottomOf="@id/main_ib_play"
+                app:layout_constraintLeft_toRightOf="@id/main_ib_repeat"
+                app:layout_constraintRight_toLeftOf="@id/main_ib_play"
+                app:layout_constraintTop_toTopOf="@id/main_ib_play" />
+
+            <ImageButton
+                android:id="@+id/main_ib_play"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/selector_button_round"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_pause"
+                app:layout_constraintBottom_toTopOf="@id/main_progress"
+                app:layout_constraintLeft_toRightOf="@id/main_ib_prev"
+                app:layout_constraintRight_toLeftOf="@id/main_ib_next"
+                app:layout_constraintTop_toBottomOf="@id/main_ratingbar" />
+
+
+            <ImageButton
+                android:id="@+id/main_ib_next"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:background="@drawable/selector_button_round"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_next"
+                app:layout_constraintBottom_toBottomOf="@id/main_ib_play"
+                app:layout_constraintLeft_toRightOf="@id/main_ib_play"
+                app:layout_constraintRight_toLeftOf="@id/main_ib_shuffle"
+                app:layout_constraintTop_toTopOf="@id/main_ib_play" />
+
+            <ImageButton
+                android:id="@+id/main_ib_shuffle"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/selector_button_round"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_shuffle_none"
+                app:layout_constraintBottom_toBottomOf="@id/main_ib_next"
+                app:layout_constraintLeft_toRightOf="@id/main_ib_next"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/main_ib_next" />
+
+            <TextView
+                android:id="@+id/main_tv_time_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center|left"
+                android:maxLines="1"
+                android:text="@string/time_zero"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@id/main_progress"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/main_progress"
+                app:layout_constraintTop_toTopOf="@id/main_progress" />
+
+            <SeekBar
+                android:id="@+id/main_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                app:layout_constraintBottom_toTopOf="@id/main_tv_title"
+                app:layout_constraintLeft_toRightOf="@id/main_tv_time_now"
+                app:layout_constraintRight_toLeftOf="@id/main_tv_time_max"
+                app:layout_constraintTop_toBottomOf="@id/main_ib_play"
+                app:layout_constraintVertical_chainStyle="spread_inside" />
+
+            <TextView
+                android:id="@+id/main_tv_time_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:gravity="center|right"
+                android:maxLines="1"
+                android:text="@string/time_zero"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@id/main_progress"
+                app:layout_constraintLeft_toRightOf="@id/main_progress"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/main_progress" />
+
+            <com.cere.csplayer.view.MarqueeTextView
+                android:id="@+id/main_tv_title"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/main_tv_artist"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_progress"
+                tools:text="标题" />
+
+            <TextView
+                android:id="@+id/main_tv_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="50dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/main_tv_album"
+                app:layout_constraintTop_toBottomOf="@id/main_tv_title"
+                tools:text="歌手" />
+
+            <TextView
+                android:id="@+id/main_tv_album"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="50dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/main_tv_number"
+                app:layout_constraintTop_toBottomOf="@id/main_tv_artist"
+                tools:text="专辑" />
+
+            <TextView
+                android:id="@+id/main_tv_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/main_tv_album"
+                tools:text="数量" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <include
+            layout="@layout/activity_main_left"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start" />
+
+        <include
+            layout="@layout/activity_main_right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="128dp">
+
+    <ImageView
+        android:id="@+id/notification_play_big_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/notification_play_big_album_art"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginRight="5dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/notification_play_big_title"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="60dp"
+        android:layout_toRightOf="@id/notification_play_big_album_art"
+        android:gravity="left|center_vertical"
+        android:singleLine="true"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/notification_play_big_number"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@android:color/darker_gray"
+        android:ellipsize="start"
+        android:gravity="right|center_vertical"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/notification_play_big_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notification_play_big_title"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/notification_play_big_album_art"
+        android:singleLine="true"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/notification_play_big_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notification_play_big_artist"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/notification_play_big_album_art"
+        android:singleLine="true"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/notification_play_big_close"
+        android:layout_toRightOf="@id/notification_play_big_album_art"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/notification_play_big_prev"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/selector_button_round_status"
+            android:padding="6dp"
+            android:scaleType="centerCrop" />
+
+        <ImageButton
+            android:id="@+id/notification_play_big_play"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_button_round_status"
+            android:padding="10dp"
+            android:scaleType="centerCrop" />
+
+        <ImageButton
+            android:id="@+id/notification_play_big_next"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/selector_button_round_status"
+            android:padding="6dp"
+            android:scaleType="centerCrop" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/notification_play_big_close"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/selector_button_round_status"
+        android:padding="16dp"
+        android:scaleType="centerCrop" />
+
+</RelativeLayout>
