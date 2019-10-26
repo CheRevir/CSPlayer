@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".App"
@@ -40,6 +41,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filse_pahts" />
         </provider>
+        <receiver
+            android:name=".receiver.HeadsetButtonReceiver"
+            android:process="com.cere.csplayer.service">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

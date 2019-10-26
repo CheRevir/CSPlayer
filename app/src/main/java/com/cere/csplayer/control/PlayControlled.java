@@ -3,7 +3,9 @@ package com.cere.csplayer.control;
 import android.os.Bundle;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.util.Log;
 
+import com.cere.csplayer.Constants;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.entity.Play;
 
@@ -29,7 +31,7 @@ public abstract class PlayControlled {
 
     public abstract void onPrevious();
 
-    public abstract void onNext() ;
+    public abstract void onNext();
 
     public abstract void seekTo(long progress);
 

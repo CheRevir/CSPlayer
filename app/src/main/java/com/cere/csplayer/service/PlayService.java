@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -21,6 +22,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
@@ -34,9 +37,11 @@ import com.cere.csplayer.activity.MainActivity;
 import com.cere.csplayer.control.PlayControlled;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.entity.Play;
+import com.cere.csplayer.receiver.HeadsetButtonReceiver;
 import com.cere.csplayer.until.BitmapUtils;
 import com.cere.csplayer.until.MusicMetadataRetriever;
 import com.cere.csplayer.view.CustomViews;
+import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 
 import java.io.File;
@@ -71,6 +76,10 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     public static final String NOTIFICATION_ACTION_NEXT = "notification_action_next";
     public static final String NOTIFICATION_ACTION_CLOSE = "notification_action_close";
 
+    private Headset mHeadset;
+    private boolean isHeadsetPressState = false;
+    private int headsetPressCount = 0;
+
     private boolean isPlaying = false;
     private boolean isShuffleMode = false;
     private int repeatMode = 0;
@@ -84,6 +93,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mHandler = new Handler(this.getMainLooper());
         mUpdateUI = new UpdateUI();
         mUpdateProgress = new UpdateProgress();
+        mHeadset = new Headset();
         initMediaPlayer();
     }
 
@@ -99,13 +109,13 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         return mPlayControlled.getBinder();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     private void initMediaPlayer() {
         mPlayer = new MediaPlayer();
-        if (XXPermissions.isHasPermission(this, Manifest.permission.WAKE_LOCK)) {
-            mPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
-        } else {
-            mPlayControlled.getCallback().sendAction(Constants.PERMISSION_WAKE_LOCK, null);
-        }
         mPlayer.setVolume(1.0f, 1.0f);
         mPlayer.setOnCompletionListener(this);
         mPlayer.setOnPreparedListener(this);
@@ -123,6 +133,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                     .setAcceptsDelayedFocusGain(true)
                     .build();
         }
+        ComponentName componentName = new ComponentName(this, HeadsetButtonReceiver.class);
+        mAudioManager.registerMediaButtonEventReceiver(componentName);
         initNotification();
     }
 
@@ -130,6 +142,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mBroadcast = new Broadcast();
         IntentFilter filter = new IntentFilter();
         filter.addAction(NOTIFICATION_ACTION);
+        filter.addAction(Constants.ACTION_HEADSET);
         this.registerReceiver(mBroadcast, filter);
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         mNotificationCompatBuilder = new NotificationCompat.Builder(this);
@@ -151,6 +164,24 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         mNotificationCompatBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         mNotificationCompatBuilder.setContentIntent(PendingIntent.getActivity(this, 100, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
         mUpdateNotification = new UpdateNotification();
+    }
+
+    private void initAtBinded() {
+        if (XXPermissions.isHasPermission(this, Manifest.permission.WAKE_LOCK)) {
+            mPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
+        } else {
+            mPlayControlled.getCallback().sendAction(Constants.PERMISSION_WAKE_LOCK, null);
+        }
+        initTelephonyManager();
+    }
+
+    private void initTelephonyManager() {
+        if (XXPermissions.isHasPermission(this, Permission.READ_PHONE_STATE)) {
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            telephonyManager.listen(new TelephonyListener(), PhoneStateListener.LISTEN_CALL_STATE);
+        } else {
+            mPlayControlled.getCallback().sendAction(Constants.PERMISSION_READ_PHONE_STATE, null);
+        }
     }
 
     private class Controlled extends PlayControlled {
@@ -212,8 +243,14 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         @Override
         public void onAction(String action, Bundle bundle) {
             switch (action) {
+                case Constants.PLAY_SERVICE_INIT:
+                    initAtBinded();
+                    break;
                 case Constants.PERMISSION_WAKE_LOCK:
                     PlayService.this.mPlayer.setWakeMode(PlayService.this, PowerManager.PARTIAL_WAKE_LOCK);
+                    break;
+                case Constants.PERMISSION_READ_PHONE_STATE:
+                    initTelephonyManager();
                     break;
             }
         }
@@ -223,6 +260,13 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
+                case Constants.ACTION_HEADSET:
+                    headsetPressCount++;
+                    if (!isHeadsetPressState) {
+                        isHeadsetPressState = true;
+                        mHandler.postDelayed(mHeadset, 1000);
+                    }
+                    break;
                 case NOTIFICATION_ACTION:
                     switch (intent.getExtras().getString(NOTIFICATION_ACTION)) {
                         case NOTIFICATION_ACTION_PLAY:
@@ -245,6 +289,29 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                     }
                     break;
             }
+        }
+    }
+
+    private class Headset implements Runnable {
+        @Override
+        public void run() {
+            switch (headsetPressCount) {
+                case 1:
+                    if (mPlayer.isPlaying()) {
+                        pause(true);
+                    } else {
+                        play();
+                    }
+                    break;
+                case 2:
+                    next();
+                    break;
+                default:
+                    previous();
+                    break;
+            }
+            headsetPressCount = 0;
+            isHeadsetPressState = false;
         }
     }
 
@@ -496,5 +563,27 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         Play play = new Play();
         play.setPosition(position);
         return mPlays.indexOf(play);
+    }
+
+    private class TelephonyListener extends PhoneStateListener {
+        private boolean isPhone = false;
+
+        @Override
+        public void onCallStateChanged(int state, String phoneNumber) {
+            super.onCallStateChanged(state, phoneNumber);
+            switch (state) {
+                case TelephonyManager.CALL_STATE_RINGING:
+                    if (mPlayer.isPlaying()) {
+                        pause(true);
+                        isPhone = true;
+                    }
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE:
+                    if (isPhone && !mPlayer.isPlaying()) {
+                        play();
+                        isPhone = false;
+                    }
+            }
+        }
     }
 }

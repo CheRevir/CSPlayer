@@ -22,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cere.csplayer.Constants;
+import com.cere.csplayer.OnPermissionCallback;
 import com.cere.csplayer.R;
 import com.cere.csplayer.adapter.AlbumArtAdapter;
 import com.cere.csplayer.adapter.MusicAdapter;
@@ -39,12 +40,11 @@ import com.cere.csplayer.until.MusicMetadataRetriever;
 import com.cere.csplayer.until.Utils;
 import com.cere.csplayer.view.MarqueeTextView;
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MusicManager.OnLoadDoneListener, PlayControl.OnConnectedListener, AlbumArtAdapter.OnPageChangeListener {
     private PlayControl mPlayControl;
@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onConnected(boolean isConnected) {
         if (isConnected) {
             mPlayControl.registerCallback(mPlayCallback.getCallback());
+            mPlayControl.sendAction(Constants.PLAY_SERVICE_INIT, null);
             mMusicManager.load();
             initData();
         }
@@ -289,17 +290,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onAction(String action, Bundle bundle) {
             switch (action) {
                 case Constants.PERMISSION_WAKE_LOCK:
-                    XXPermissions.with(MainActivity.this).constantRequest().permission(Manifest.permission.WAKE_LOCK).request(new OnPermission() {
+                    XXPermissions.with(MainActivity.this).constantRequest().permission(Manifest.permission.WAKE_LOCK).request(new OnPermissionCallback() {
                         @Override
-                        public void hasPermission(List<String> granted, boolean isAll) {
+                        public void hasPermission(boolean isAll) {
                             if (mPlayControl.isConnected()) {
                                 mPlayControl.sendAction(Constants.PERMISSION_WAKE_LOCK, null);
                             }
                         }
-
+                    });
+                    break;
+                case Constants.PERMISSION_READ_PHONE_STATE:
+                    XXPermissions.with(MainActivity.this).constantRequest().permission(Permission.READ_PHONE_STATE).request(new OnPermissionCallback() {
                         @Override
-                        public void noPermission(List<String> denied, boolean quick) {
-
+                        public void hasPermission(boolean isAll) {
+                            if (mPlayControl.isConnected()) {
+                                mPlayControl.sendAction(Constants.PERMISSION_READ_PHONE_STATE, null);
+                            }
                         }
                     });
                     break;
