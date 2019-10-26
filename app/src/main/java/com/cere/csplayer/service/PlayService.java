@@ -81,6 +81,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
     private int headsetPressCount = 0;
 
     private boolean isPlaying = false;
+    private boolean isPause = false;
     private boolean isShuffleMode = false;
     private int repeatMode = 0;
     private final int MODE_REPEAT_NONE = 0;
@@ -143,6 +144,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         IntentFilter filter = new IntentFilter();
         filter.addAction(NOTIFICATION_ACTION);
         filter.addAction(Constants.ACTION_HEADSET);
+        filter.addAction(AudioManager.ACTION_HEADSET_PLUG);
+        filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         this.registerReceiver(mBroadcast, filter);
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         mNotificationCompatBuilder = new NotificationCompat.Builder(this);
@@ -267,6 +270,16 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                         mHandler.postDelayed(mHeadset, 1000);
                     }
                     break;
+                case AudioManager.ACTION_AUDIO_BECOMING_NOISY:
+                    if (mPlayer.isPlaying()) {
+                        pause(true);
+                    }
+                    break;
+                case AudioManager.ACTION_HEADSET_PLUG:
+                    if (intent.hasExtra("state") && intent.getExtras().getInt("state") == 1 && isPause) {
+                        play();
+                    }
+                    break;
                 case NOTIFICATION_ACTION:
                     switch (intent.getExtras().getString(NOTIFICATION_ACTION)) {
                         case NOTIFICATION_ACTION_PLAY:
@@ -319,6 +332,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         if (!mPlayer.isPlaying() && requestAudioFocus()) {
             mPlayer.start();
             isPlaying = true;
+            isPause = false;
             mPlayControlled.getCallback().setPlay(mPlayer.isPlaying());
             mHandler.postDelayed(mUpdateProgress, 0);
             mHandler.post(mUpdateNotification);
@@ -329,6 +343,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         if (mPlayer.isPlaying() || isPlaying) {
             mPlayer.pause();
             isPlaying = false;
+            isPause = true;
             mPlayControlled.getCallback().setPlay(mPlayer.isPlaying());
             mHandler.removeCallbacks(mUpdateProgress);
             if (isNotify) {
