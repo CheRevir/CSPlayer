@@ -24,22 +24,25 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.palette.graphics.Palette;
 
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.cere.csplayer.Constants;
+import com.cere.csplayer.GlideApp;
 import com.cere.csplayer.R;
 import com.cere.csplayer.activity.MainActivity;
 import com.cere.csplayer.control.PlayControlled;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.entity.Play;
 import com.cere.csplayer.receiver.HeadsetButtonReceiver;
-import com.cere.csplayer.until.BitmapUtils;
-import com.cere.csplayer.until.MusicMetadataRetriever;
 import com.cere.csplayer.view.CustomViews;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
@@ -467,14 +470,19 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
             mRemoteViews.setTextViewText(R.id.notification_play_album, music.getAlbum());
             mRemoteViewsBig.setTextViewText(R.id.notification_play_big_album, music.getAlbum());
             mRemoteViewsBig.setTextViewText(R.id.notification_play_big_number, index + 1 + "/" + mPlays.size());
-            Bitmap bitmap = BitmapUtils.getScaleBitmap(MusicMetadataRetriever.getInstance().getAlbumArt(music.getPath()), 500, 500);
-            mRemoteViews.setImageViewBitmap(R.id.notification_play_album_art, bitmap);
-            mRemoteViewsBig.setImageViewBitmap(R.id.notification_play_big_album_art, bitmap);
-            if (bitmap == null) {
-                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.clannad);
-            }
-            Palette.Builder palette = Palette.from(bitmap);
-            palette.generate(PlayService.this);
+            //Bitmap bitmap = BitmapUtils.getScaleBitmap(MusicMetadataRetriever.getInstance().getAlbumArt(music.getPath()), 500, 500);
+            GlideApp.with(PlayService.this).asBitmap().load(music.getPath()).into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                    mRemoteViews.setImageViewBitmap(R.id.notification_play_album_art, resource);
+                    mRemoteViewsBig.setImageViewBitmap(R.id.notification_play_big_album_art, resource);
+                    if (resource == null) {
+                        resource = BitmapFactory.decodeResource(getResources(), R.drawable.clannad);
+                    }
+                    Palette.Builder palette = Palette.from(resource);
+                    palette.generate(PlayService.this);
+                }
+            });
         }
     }
 
