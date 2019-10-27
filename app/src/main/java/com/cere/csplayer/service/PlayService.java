@@ -150,15 +150,20 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         mNotificationCompatBuilder = new NotificationCompat.Builder(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("music", "CSPlayer", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel("music", "CSPlayer", NotificationManager.IMPORTANCE_LOW);
             channel.enableLights(false);
             channel.setDescription("CSPlayer播放通知");
             channel.setShowBadge(true);
             channel.setBypassDnd(true);
             channel.enableVibration(false);
+            channel.setVibrationPattern(new long[]{0});
+            channel.setSound(null, null);
             channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             managerCompat.createNotificationChannel(channel);
             mNotificationCompatBuilder.setChannelId("music");
+        } else {
+            mNotificationCompatBuilder.setVibrate(new long[]{0});
+            mNotificationCompatBuilder.setSound(null);
         }
         mNotificationCompatBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mNotificationCompatBuilder.setOngoing(true);

@@ -1,6 +1,9 @@
 package com.cere.csplayer.activity;
 
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -21,7 +24,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.cere.csplayer.Constants;
+import com.cere.csplayer.GlideApp;
 import com.cere.csplayer.OnPermissionCallback;
 import com.cere.csplayer.R;
 import com.cere.csplayer.adapter.AlbumArtAdapter;
@@ -33,10 +38,10 @@ import com.cere.csplayer.data.SQLite;
 import com.cere.csplayer.data.SharedPre;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.entity.Play;
+import com.cere.csplayer.glide.BlurTransformation;
 import com.cere.csplayer.service.PlayService;
 import com.cere.csplayer.until.BitmapUtils;
 import com.cere.csplayer.until.DialogUtils;
-import com.cere.csplayer.until.MusicMetadataRetriever;
 import com.cere.csplayer.until.Utils;
 import com.cere.csplayer.view.MarqueeTextView;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -315,6 +320,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private class UpdateUI implements Runnable {
         private String data;
+        private RequestOptions mRequestOptions;
+
+        public UpdateUI() {
+            mRequestOptions = new RequestOptions();
+            Bitmap bitmap = BitmapUtils.getBitmapBlur(MainActivity.this, BitmapUtils.getScaleBitmap(BitmapFactory.decodeResource(MainActivity.this.getResources(), R.drawable.clannad), 10, 10), 1.0f);
+            mRequestOptions.error(new BitmapDrawable(MainActivity.this.getResources(), bitmap));
+        }
 
         public void setData(String date) {
             this.data = date;
@@ -322,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void run() {
-            iv_background.setImageBitmap(BitmapUtils.getBitmapBlur(MainActivity.this, BitmapUtils.getScaleBitmap(MusicMetadataRetriever.getInstance().getAlbumArt(data), 10, 10), 1.0f));
+            GlideApp.with(MainActivity.this).asBitmap().apply(mRequestOptions).transform(new BlurTransformation(MainActivity.this)).load(data).into(iv_background);
         }
     }
 

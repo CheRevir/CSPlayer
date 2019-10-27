@@ -10,10 +10,19 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        /*ndk {
+            abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a'
+        }*/
+        resConfigs "zh-rCN", "xxhdpi"
     }
     buildTypes {
         release {
+            //混淆
             minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            //shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -36,4 +45,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.hjq:xxpermissions:6.0'
     implementation 'androidx.palette:palette:1.0.0'
+
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    annotationProcessor 'androidx.annotation:annotation:1.1.0'
+    implementation ("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
+        // Excludes the support library because it's already included by Glide.
+        transitive = false
+    }
 }
