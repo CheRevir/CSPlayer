@@ -42,6 +42,7 @@ import com.cere.csplayer.glide.BlurTransformation;
 import com.cere.csplayer.service.PlayService;
 import com.cere.csplayer.until.BitmapUtils;
 import com.cere.csplayer.until.DialogUtils;
+import com.cere.csplayer.until.FileUtils;
 import com.cere.csplayer.until.Utils;
 import com.cere.csplayer.view.MarqueeTextView;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -444,6 +445,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void delete(String path) {
+        FileUtils.delete(path);
+        int position = mMusicManager.getPosition(path);
+        Play play = new Play();
+        play.setPosition(position);
+        mMusicManager.getPlays().remove(play);
+        SQLite.getLiteOrm(this).delete(play);
     }
 
     @Override

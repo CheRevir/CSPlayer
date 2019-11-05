@@ -38,6 +38,7 @@ public class Music implements Comparable<Music>, Parcelable {
     @Default("0")
     @Column("star")
     private int star;
+    @NotNull
     @Column("path")
     private String path;
 

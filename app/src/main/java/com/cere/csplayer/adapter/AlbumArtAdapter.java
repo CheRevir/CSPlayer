@@ -2,26 +2,27 @@ package com.cere.csplayer.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.cere.csplayer.GlideApp;
 import com.cere.csplayer.R;
 import com.cere.csplayer.content.MusicManager;
 import com.cere.csplayer.entity.Play;
+import com.cere.csplayer.until.FileUtils;
 import com.cere.csplayer.view.PageTransformer;
 
 import java.util.ArrayList;
@@ -44,7 +45,12 @@ public class AlbumArtAdapter extends RecyclerView.Adapter<AlbumArtAdapter.ViewHo
     public AlbumArtAdapter(Context context, ViewPager2 viewPager2, MusicManager musicManager) {
         this.mContext = context;
         mRequestOptions = new RequestOptions();
-        mRequestOptions.error(null);
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.TRANSPARENT);
+        canvas.drawRect(0, 0, 1, 1, paint);
+        mRequestOptions.error(new BitmapDrawable(bitmap));
         mDiffer = new AsyncListDiffer<Play>(this, mItemCallback);
         mMusicManager = musicManager;
         this.mViewPager2 = viewPager2;
@@ -97,22 +103,11 @@ public class AlbumArtAdapter extends RecyclerView.Adapter<AlbumArtAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        holder.iv_AlbumArt.setTag(R.id.adapter_viewpager_album_art, position);
-        GlideApp.with(mContext).asBitmap().apply(mRequestOptions).load(mMusicManager.getMusics().get(getList().get(position).getPosition()).getPath()).into(new SimpleTarget<Bitmap>() {
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                if (position == (Integer) holder.iv_AlbumArt.getTag(R.id.adapter_viewpager_album_art)) {
-                    holder.iv_AlbumArt.setImageBitmap(resource);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onViewRecycled(@NonNull ViewHolder holder) {
-        Glide.with(mContext).clear(holder.iv_AlbumArt);
-        super.onViewRecycled(holder);
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        String path = mMusicManager.getMusics().get(getList().get(position).getPosition()).getPath();
+        if (FileUtils.isExists(path)) {
+            GlideApp.with(mContext).asBitmap().apply(mRequestOptions).load(path).into(holder.iv_AlbumArt);
+        }
     }
 
     @Override
