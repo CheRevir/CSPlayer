@@ -463,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void about() {
-        DialogUtils.getAlertDialog(this, "关于", "版本号：" + BuildConfig.VERSION_CODE + "\n\n版本名：" + BuildConfig.VERSION_NAME + "n\n开发者：" + BuildConfig.DEVELOPER, R.mipmap.ic_launcher)
+        DialogUtils.getAlertDialog(this, "关于", "版本号：" + BuildConfig.VERSION_CODE + "\n\n版本名：" + BuildConfig.VERSION_NAME + "\n\n开发者：" + BuildConfig.DEVELOPER, R.mipmap.ic_launcher)
                 .setPositiveButton("确定", null)
                 .show();
     }
