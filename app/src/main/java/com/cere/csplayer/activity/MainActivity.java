@@ -25,6 +25,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.cere.csplayer.BuildConfig;
 import com.cere.csplayer.Constants;
 import com.cere.csplayer.GlideApp;
 import com.cere.csplayer.OnPermissionCallback;
@@ -42,7 +43,6 @@ import com.cere.csplayer.glide.BlurTransformation;
 import com.cere.csplayer.service.PlayService;
 import com.cere.csplayer.until.BitmapUtils;
 import com.cere.csplayer.until.DialogUtils;
-import com.cere.csplayer.until.FileUtils;
 import com.cere.csplayer.until.Utils;
 import com.cere.csplayer.view.MarqueeTextView;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -447,15 +447,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    private void delete(String path) {
-        FileUtils.delete(path);
-        int position = mMusicManager.getPosition(path);
-        Play play = new Play();
-        play.setPosition(position);
-        mMusicManager.getPlays().remove(play);
-        SQLite.getLiteOrm(this).delete(play);
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -472,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void about() {
-        DialogUtils.getAlertDialog(this, "关于", "版本号：1\n\n版本名：1.0\n\n开发者：CheRevir", R.mipmap.ic_launcher)
+        DialogUtils.getAlertDialog(this, "关于", "版本号：" + BuildConfig.VERSION_CODE + "\n\n版本名：" + BuildConfig.VERSION_NAME + "n\n开发者：" + BuildConfig.DEVELOPER, R.mipmap.ic_launcher)
                 .setPositiveButton("确定", null)
                 .show();
     }

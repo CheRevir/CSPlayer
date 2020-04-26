@@ -14,6 +14,8 @@ android {
             abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a'
         }*/
         resConfigs "zh-rCN", "xxhdpi"
+
+        buildConfigField("String", "DEVELOPER", "\"CheRevir\"")
     }
     buildTypes {
         release {
@@ -49,7 +51,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     annotationProcessor 'androidx.annotation:annotation:1.1.0'
-    implementation ("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
+    implementation("com.github.bumptech.glide:recyclerview-integration:4.9.0") {
         // Excludes the support library because it's already included by Glide.
         transitive = false
     }
