@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -37,7 +36,6 @@ import com.cere.csplayer.activity.MainActivity;
 import com.cere.csplayer.control.PlayControlled;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.entity.Play;
-import com.cere.csplayer.receiver.HeadsetButtonReceiver;
 import com.cere.csplayer.until.BitmapUtils;
 import com.cere.csplayer.until.MusicMetadataRetriever;
 import com.cere.csplayer.view.CustomViews;
@@ -131,8 +129,8 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
                     .setAcceptsDelayedFocusGain(true)
                     .build();
         }
-        ComponentName componentName = new ComponentName(this, HeadsetButtonReceiver.class);
-        mAudioManager.registerMediaButtonEventReceiver(componentName);
+        //ComponentName componentName = new ComponentName(this, HeadsetButtonReceiver.class);
+        //mAudioManager.registerMediaButtonEventReceiver(componentName);
         initNotification();
     }
 
@@ -145,7 +143,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         this.registerReceiver(mBroadcast, filter);
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
-        mNotificationCompatBuilder = new NotificationCompat.Builder(this);
+        mNotificationCompatBuilder = new NotificationCompat.Builder(this, "music");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("music", "CSPlayer", NotificationManager.IMPORTANCE_LOW);
             channel.enableLights(false);
@@ -157,7 +155,6 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
             channel.setSound(null, null);
             channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             managerCompat.createNotificationChannel(channel);
-            mNotificationCompatBuilder.setChannelId("music");
         } else {
             mNotificationCompatBuilder.setVibrate(new long[]{0});
             mNotificationCompatBuilder.setSound(null);
