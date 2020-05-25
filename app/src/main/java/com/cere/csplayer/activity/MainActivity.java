@@ -364,10 +364,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.main_ib_repeat:
-                repeat(true);
+                if (mPlayControl.isConnected()) {
+                    repeat(true);
+                }
                 break;
             case R.id.main_ib_shuffle:
-                shuffle(true);
+                if (mPlayControl.isConnected()) {
+                    shuffle(true);
+                }
                 break;
             case R.id.main_right_bottom_fab:
                 mMusicAdapter.smoothScrollToTip();
