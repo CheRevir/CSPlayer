@@ -86,6 +86,7 @@ public class MusicManager implements MusicScanner.OnScanDoneListener, PlayBuilde
                 }
             });
         } else {
+            mOnLoadDoneListener.onMusicLoadDone(list);
             DialogUtils.getAlertDialog(mContext, "提示", "没有扫描到音乐文件。", R.mipmap.ic_launcher).setPositiveButton("确定", null).show();
         }
     }

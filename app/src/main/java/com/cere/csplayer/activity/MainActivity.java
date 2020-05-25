@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -116,18 +117,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMusicLoadDone(ArrayList<Music> list) {
-        mMusicAdapter.setList(list);
-        if (mPlayControl.isConnected()) {
-            mPlayControl.setList(list);
+        if (list.size() > 0) {
+            mMusicAdapter.setList(list);
+            if (mPlayControl.isConnected()) {
+                mPlayControl.setList(list);
+            }
+        } else {
+            mPlayControl.disconnect();
         }
     }
 
     @Override
     public void onPlayLoadDone(ArrayList<Play> list) {
-        mAlbumArtAdapter.setList(list);
-        if (mPlayControl.isConnected()) {
-            mPlayControl.setPlayList(list);
-            mPlayControl.setData(mMusicManager.getMusics().get(mMusicManager.getPlays().get(SharedPre.getInt(this, Constants.PLAY_INDEX, 0)).getPosition()).getPath());
+        if (list.size() > 0) {
+            mAlbumArtAdapter.setList(list);
+            if (mPlayControl.isConnected()) {
+                mPlayControl.setPlayList(list);
+                mPlayControl.setData(mMusicManager.getMusics().get(mMusicManager.getPlays().get(SharedPre.getInt(this, Constants.PLAY_INDEX, 0)).getPosition()).getPath());
+            }
+        } else {
+            mPlayControl.disconnect();
         }
     }
 
