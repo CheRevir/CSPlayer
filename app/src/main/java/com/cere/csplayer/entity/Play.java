@@ -20,7 +20,7 @@ public class Play implements Parcelable {
     private long id;
     @Column("position")
     private int position;
-
+    
     public Play() {
     }
 
