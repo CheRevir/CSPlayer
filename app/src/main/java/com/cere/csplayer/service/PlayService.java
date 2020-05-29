@@ -16,13 +16,16 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
@@ -42,7 +45,10 @@ import com.cere.csplayer.view.CustomViews;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 /**

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Log;
 
+import com.cere.csplayer.Constants;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.view.DialogProgress;
 
@@ -35,9 +37,12 @@ public class MusicScanner extends AsyncTask<Void, Void, ArrayList<Music>> {
     @Override
     protected ArrayList<Music> doInBackground(Void... voids) {
         ArrayList<Music> list = new ArrayList<>();
-        String[] projection = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA};
-        Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Audio.Media.TITLE);
+        String[] projection = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION
+                , MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.VOLUME_NAME};
+        Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        Log.e(Constants.TAG, "doInBackground: " + cursor.getCount());
         while (cursor.moveToNext()) {
+            Log.e(Constants.TAG, "doInBackground: " + cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.VOLUME_NAME)));
             Music music = new Music();
             music.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
             music.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
