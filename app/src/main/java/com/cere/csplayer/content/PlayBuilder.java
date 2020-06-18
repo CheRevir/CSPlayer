@@ -16,12 +16,12 @@ import java.util.Collections;
  */
 public class PlayBuilder extends AsyncTask<ArrayList<Music>, Void, ArrayList<Play>> {
     private Context mContext;
-    private OnBuilderDonListener mOnBuilderDonListener;
+    private OnBuilderDoneListener mOnBuilderDoneListener;
     private Play mPlay;
 
-    public PlayBuilder(Context context, OnBuilderDonListener onBuilderDonListener, Play play) {
+    public PlayBuilder(Context context, OnBuilderDoneListener onBuilderDoneListener, Play play) {
         this.mContext = context;
-        this.mOnBuilderDonListener = onBuilderDonListener;
+        this.mOnBuilderDoneListener = onBuilderDoneListener;
         this.mPlay = play;
     }
 
@@ -47,10 +47,10 @@ public class PlayBuilder extends AsyncTask<ArrayList<Music>, Void, ArrayList<Pla
     @Override
     protected void onPostExecute(ArrayList<Play> plays) {
         super.onPostExecute(plays);
-        mOnBuilderDonListener.onBuildDone(plays);
+        mOnBuilderDoneListener.onBuildDone(plays);
     }
 
-    public interface OnBuilderDonListener {
+    public interface OnBuilderDoneListener {
         void onBuildDone(ArrayList<Play> list);
     }
 }

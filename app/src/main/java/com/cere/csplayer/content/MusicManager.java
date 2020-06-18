@@ -1,9 +1,7 @@
 package com.cere.csplayer.content;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Handler;
 
 import com.cere.csplayer.R;
@@ -23,7 +21,7 @@ import java.util.List;
 /**
  * Created by CheRevir on 2019/10/22
  */
-public class MusicManager implements MusicScanner.OnScanDoneListener, PlayBuilder.OnBuilderDonListener {
+public class MusicManager implements MusicScanner.OnScanDoneListener, PlayBuilder.OnBuilderDoneListener {
     private Context mContext;
     private Handler mHandler;
     private OnLoadDoneListener mOnLoadDoneListener;
@@ -37,12 +35,7 @@ public class MusicManager implements MusicScanner.OnScanDoneListener, PlayBuilde
     }
 
     public void load() {
-        String[] permissions = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            permissions = new String[]{Permission.SYSTEM_ALERT_WINDOW, "android.permission.READ_MEDIA_AUDIO"};
-        } else {
-            permissions = new String[]{Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE, Permission.SYSTEM_ALERT_WINDOW};
-        }
+        String[] permissions = new String[]{Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE, Permission.SYSTEM_ALERT_WINDOW};
         if (XXPermissions.isHasPermission(mContext, permissions)) {
             mMusics = SQLite.getLiteOrm(mContext).query(Music.class);
             if (!mMusics.isEmpty()) {
