@@ -127,7 +127,7 @@ public class AlbumArtAdapter extends RecyclerView.Adapter<AlbumArtAdapter.ViewHo
         }
     };
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView iv_AlbumArt;
 
         public ViewHolder(View view) {

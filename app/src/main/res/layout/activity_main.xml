@@ -126,7 +126,6 @@
                 app:layout_constraintRight_toLeftOf="@id/main_ib_next"
                 app:layout_constraintTop_toBottomOf="@id/main_ratingbar" />
 
-
             <ImageButton
                 android:id="@+id/main_ib_next"
                 android:layout_width="65dp"

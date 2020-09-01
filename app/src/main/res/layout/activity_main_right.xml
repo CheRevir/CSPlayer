@@ -65,11 +65,13 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:elevation="25dp"
+            android:focusable="true"
             android:src="@drawable/ic_synchronize"
             app:backgroundTint="#795548"
             app:fabCustomSize="60dp"
             app:layout_anchor="@id/main_right_bottom_appbar"
-            app:pressedTranslationZ="25dp" />
+            app:pressedTranslationZ="25dp"
+            app:tint="@color/white" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

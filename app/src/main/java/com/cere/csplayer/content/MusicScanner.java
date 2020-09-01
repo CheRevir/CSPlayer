@@ -1,22 +1,21 @@
 package com.cere.csplayer.content;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.util.Log;
 
-import com.cere.csplayer.Constants;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.view.DialogProgress;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
  * Created by CheRevir on 2019/10/22
  */
 public class MusicScanner extends AsyncTask<Void, Void, ArrayList<Music>> {
+    @SuppressLint("StaticFieldLeak")
     private Context mContext;
     private OnScanDoneListener mOnScanDoneListener;
     private DialogProgress mDialogProgress;
@@ -35,6 +34,7 @@ public class MusicScanner extends AsyncTask<Void, Void, ArrayList<Music>> {
         this.mDialogProgress.show();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected ArrayList<Music> doInBackground(Void... voids) {
         ArrayList<Music> list = new ArrayList<>();
@@ -43,16 +43,18 @@ public class MusicScanner extends AsyncTask<Void, Void, ArrayList<Music>> {
                 , MediaStore.Audio.Media.DATA};
         Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, MediaStore.Audio.Media.TITLE);
-        while (cursor.moveToNext()) {
-            Music music = new Music();
-            music.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-            music.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-            music.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-            music.setDuration(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-            music.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
-            list.add(music);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Music music = new Music();
+                music.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                music.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                music.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                music.setDuration(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                music.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                list.add(music);
+            }
+            cursor.close();
         }
-        cursor.close();
         return list;
     }
 
