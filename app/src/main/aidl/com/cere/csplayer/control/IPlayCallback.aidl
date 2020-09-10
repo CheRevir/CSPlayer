@@ -1,0 +1,13 @@
+// IPlayCallback.aidl
+package com.cere.csplayer.control;
+
+// Declare any non-default types here with import statements
+import android.os.Bundle;
+
+oneway interface IPlayCallback {
+     void setPlay(boolean isPlay);
+     void setData(String data);
+     void setDuration(long duration);
+     void setCurrentDuration(long duration);
+     void sendAction(String action, in Bundle bundle);
+}
