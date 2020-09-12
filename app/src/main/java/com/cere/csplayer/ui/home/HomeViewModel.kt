@@ -1,13 +1,11 @@
 package com.cere.csplayer.ui.home
 
-import androidx.lifecycle.LiveData
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.cere.csplayer.adapter.AlbumArtAdapter
 
-class HomeViewModel : ViewModel() {
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
+    val adapter = MutableLiveData(AlbumArtAdapter(application))
+    val star = MutableLiveData(0)
 }

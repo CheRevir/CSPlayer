@@ -11,10 +11,13 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "play")
 data class Play(
-    @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "position") var position: Int
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") var id: Int,
+    @ColumnInfo(name = "position") var position: Int
 ) : Parcelable {
 
-    constructor(parcel: Parcel) : this(parcel.readInt())
+    constructor(position: Int) : this(0, position)
+
+    constructor(parcel: Parcel) : this(parcel.readInt(), parcel.readInt())
 
     override fun equals(other: Any?): Boolean {
         return if (other is Play) position == other.position else false
@@ -25,11 +28,16 @@ data class Play(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
         parcel.writeInt(position)
     }
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    override fun toString(): String {
+        return "Play(id=$id, position=$position)"
     }
 
     companion object CREATOR : Parcelable.Creator<Play> {

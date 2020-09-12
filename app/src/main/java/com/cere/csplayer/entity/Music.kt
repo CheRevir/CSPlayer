@@ -22,20 +22,20 @@ data class Music(
     @ColumnInfo(name = "title") var title: String,
     @ColumnInfo(name = "artist") var artist: String,
     @ColumnInfo(name = "album") var album: String,
-    @ColumnInfo(name = "duration") var duration: Long,
-    @ColumnInfo(name = "star", defaultValue = "0") var star: Int,
+    @ColumnInfo(name = "duration") var duration: Int,
+    @ColumnInfo(name = "star", defaultValue = "0") var star: Float,
     @ColumnInfo(name = "parent") var parent: String
 ) : Parcelable, Comparable<Music>, Serializable {
 
-    constructor(id: Int) : this(id, "", "", "", 0, 0, "")
+    constructor(id: Int) : this(id, "", "", "", 0, 0f, "")
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readLong(),
         parcel.readInt(),
+        parcel.readFloat(),
         parcel.readString()!!
     )
 
@@ -60,8 +60,8 @@ data class Music(
         parcel.writeString(title)
         parcel.writeString(artist)
         parcel.writeString(album)
-        parcel.writeLong(duration)
-        parcel.writeInt(star)
+        parcel.writeInt(duration)
+        parcel.writeFloat(star)
         parcel.writeString(parent)
     }
 

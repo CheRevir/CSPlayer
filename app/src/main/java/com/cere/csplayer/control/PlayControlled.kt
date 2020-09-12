@@ -18,7 +18,7 @@ abstract class PlayControlled {
     abstract fun onPause()
     abstract fun onPrevious()
     abstract fun onNext()
-    abstract fun onSeekTo(progress: Long)
+    abstract fun onSeekTo(progress: Int)
     abstract fun onData(data: Uri)
     abstract fun onMusicList(list: List<Music>)
     abstract fun onPlayList(list: List<Play>)
@@ -43,7 +43,7 @@ abstract class PlayControlled {
             remoteCallbackList.finishBroadcast()
         }
 
-        fun setDuration(duration: Long) {
+        fun setDuration(duration: Int) {
             val num = remoteCallbackList.beginBroadcast()
             for (i in 0 until num) {
                 remoteCallbackList.getBroadcastItem(i).setDuration(duration)
@@ -51,7 +51,7 @@ abstract class PlayControlled {
             remoteCallbackList.finishBroadcast()
         }
 
-        fun setCurrentDuration(duration: Long) {
+        fun setCurrentDuration(duration: Int) {
             val num = remoteCallbackList.beginBroadcast()
             for (i in 0 until num) {
                 remoteCallbackList.getBroadcastItem(i).setCurrentDuration(duration)
@@ -85,7 +85,7 @@ abstract class PlayControlled {
             this@PlayControlled.onNext()
         }
 
-        override fun seekTo(progress: Long) {
+        override fun seekTo(progress: Int) {
             this@PlayControlled.onSeekTo(progress)
         }
 

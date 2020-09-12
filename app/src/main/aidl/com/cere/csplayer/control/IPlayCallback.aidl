@@ -7,7 +7,7 @@ import android.os.Bundle;
 oneway interface IPlayCallback {
      void setPlay(boolean isPlay);
      void setData(String data);
-     void setDuration(long duration);
-     void setCurrentDuration(long duration);
+     void setDuration(int duration);
+     void setCurrentDuration(int duration);
      void sendAction(String action, in Bundle bundle);
 }

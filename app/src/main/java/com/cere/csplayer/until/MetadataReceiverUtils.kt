@@ -18,7 +18,7 @@ class MetadataReceiverUtils {
         return null
     }
 
-    private fun getBytes(fd: ParcelFileDescriptor): ByteArray? {
+    fun getBytes(fd: ParcelFileDescriptor): ByteArray? {
         return getReceiver(fd).embeddedPicture
     }
 

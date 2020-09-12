@@ -1,2 +1,3 @@
+include ':Skin'
 include ':app'
 rootProject.name = "CSPlayer"

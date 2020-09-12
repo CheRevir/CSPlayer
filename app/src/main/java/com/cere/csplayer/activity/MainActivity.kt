@@ -1,47 +1,27 @@
 package com.cere.csplayer.activity
 
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.view.KeyEvent
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.cere.csplayer.R
+import com.cere.csplayer.adapter.MusicAdapter
 import com.cere.csplayer.until.PermissionUtils
-import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableOnSubscribe
-import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeUnit.MILLISECONDS
+import kotlinx.android.synthetic.main.activity_main_right.*
 
-@JvmOverloads
-fun View.setOnShakeProofClickListener(
-    windowDuration: Long = 1000,
-    unit: TimeUnit = MILLISECONDS,
-    listener: (view: View) -> Unit
-): Disposable {
-    return Observable.create(ObservableOnSubscribe<View> { emitter ->
-        setOnClickListener {
-            if (!emitter.isDisposed) {
-                emitter.onNext(it)
-            }
-        }
-    }).throttleFirst(windowDuration, unit)
-        .subscribe { listener(it) }
-}
+class MainActivity : BaseActivity() {
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
-class MainActivity : AppCompatActivity() {
     private lateinit var playViewModel: PlayViewModel
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var adapter: MusicAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         playViewModel = ViewModelProvider(this).get(PlayViewModel::class.java)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(main_toolbar)
 
         /*Observable.create<List<Music>> {
             Log.e("TAG", "MainActivity -> onCreate: ${Thread.currentThread().name}")
@@ -138,79 +118,51 @@ class MainActivity : AppCompatActivity() {
                 }
             }*/
 
-        /*Observable.just("a", "b").filter {
-            it == "a"
-        }.subscribe {
-            Log.e("TAG", "MainActivity -> onCreate: $it")
-        }*/
-
-        /* GlobalScope.launch {
-             delay(3000)
-             Snackbar.make(fab, "Replace with your own action", Snackbar.LENGTH_LONG)
-                 .setAction("Action", null).show()
-         }*/
-
-
-        fab.setOnShakeProofClickListener(3000, MILLISECONDS) {
-            Snackbar.make(it, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action") {
-                    /* runBlocking {
-                         val n = AppDatabase.instance.getMusicDao()
-                             .insert(Music(i++, "1", "1", "1", 1, 0, Uri.parse("scard/it.txt")))
-                         Log.e("TAG", "MainActivity -> onCreatesdgasgasdga: $n")
-                     }*/
-                }.show()
-        }
-
-        playViewModel.isPlay.observe(this) {
-            Log.e("TAG", "MainActivity -> onCreate: $it")
-        }
-
-        playViewModel.musics.observe(this) { list ->
-            Log.e("TAG", "MainActivity -> onCreate: ${list.size}")
-            /*list.toObservable()
-                //.subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.newThread())
-                .subscribe {
-                    Log.e("TAG", "MainActivity -> onCreate: ${Thread.currentThread().name}")
-                    Log.e("TAG", "MainActivity -> onCreate: ${it.id}")
-                }*/
-        }
-
-        //val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        //val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        val navController = findNavController(R.id.main_nav_host_fragment)
         appBarConfiguration = AppBarConfiguration(
             setOf(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow),
-            drawer_layout
+            main_drawer_layout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        nav_view.setupWithNavController(navController)
-    }
+        main_nav_view.setupWithNavController(navController)
 
-    /*override fun onStart() {
-        super.onStart()
-        if (XXPermissions.hasPermission(this, Permission.Group.STORAGE)) {
-            Toast.makeText(this, "有权限", Toast.LENGTH_LONG).show()
-        } else {
-            XXPermissions.with(this).permission(Permission.Group.STORAGE)
-                .request(object : OnPermissionCallback(this) {
-                    override fun hasPermission(granted: MutableList<String>, all: Boolean) {
-                        Toast.makeText(this@MainActivity, "权限已允许", Toast.LENGTH_LONG).show()
-                    }
-                })
+        main_right_bottom_appbar.setNavigationOnClickListener {
+            main_drawer_layout.closeDrawer(GravityCompat.END)
         }
-    }*/
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+        adapter = MusicAdapter(this)
+        main_right_recyclerview.adapter = adapter
+        main_right_recyclerview.layoutManager = LinearLayoutManager(this)
+        main_right_recyclerview.setHasFixedSize(true)
+
+        playViewModel.musics.observe(this) {
+            adapter.setList(it)
+        }
+        playViewModel.id.observe(this) {
+            adapter.setPosition(adapter.getPosition(it))
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
+        val navController = findNavController(R.id.main_nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (main_drawer_layout.isDrawerOpen(GravityCompat.START)) {
+                main_drawer_layout.closeDrawer(GravityCompat.START)
+            } else if (main_drawer_layout.isDrawerOpen(GravityCompat.END)) {
+                main_drawer_layout.closeDrawer(GravityCompat.END)
+            } else if (!fragment!!.onBackPressed()) {
+                return super.onKeyDown(keyCode, event)
+            }
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun finish() {
+        moveTaskToBack(false)
     }
 }

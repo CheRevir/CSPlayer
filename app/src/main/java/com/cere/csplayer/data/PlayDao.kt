@@ -23,6 +23,9 @@ interface PlayDao {
     @Delete
     suspend fun delete(play: Play): Int
 
+    @Delete
+    suspend fun delete(list: List<Play>): Int
+
     @Query("delete from play")
     suspend fun deleteAll(): Int
 

@@ -15,7 +15,7 @@ import java.io.FileNotFoundException
 object FileUtils {
     @Suppress("DEPRECATION")
     @JvmStatic
-    fun getFileDescriptor(context: Context, uri: Uri): FileData {
+    fun getFileData(context: Context, uri: Uri): FileData {
         var fd = FileData()
         when {
             XXPermissions.hasPermission(context, Permission.READ_EXTERNAL_STORAGE) -> {
@@ -30,7 +30,7 @@ object FileUtils {
                 XXPermissions.with(context).permission(Permission.READ_EXTERNAL_STORAGE)
                     .request(object : OnPermissionCallback(context) {
                         override fun hasPermission(granted: MutableList<String>, all: Boolean) {
-                            fd = getFileDescriptor(context, uri)
+                            fd = getFileData(context, uri)
                         }
                     })
             }
@@ -40,7 +40,7 @@ object FileUtils {
                     ?.request(object :
                         OnPermissionCallback(PermissionUtils.instance.activity!!) {
                         override fun hasPermission(granted: MutableList<String>, all: Boolean) {
-                            fd = getFileDescriptor(context, uri)
+                            fd = getFileData(context, uri)
                         }
                     })
             }

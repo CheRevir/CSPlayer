@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/menu_home_search"
+        android:icon="@drawable/ic_action_bar_search"
+        android:title="@string/search"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
+    <item
+        android:id="@+id/menu_home_setting"
+        android:title="@string/setting"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_home_music_list"
+        android:title="@string/list_music"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_home_scan"
+        android:title="@string/scan"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_home_about"
+        android:title="@string/about"
+        app:showAsAction="never" />
+</menu>

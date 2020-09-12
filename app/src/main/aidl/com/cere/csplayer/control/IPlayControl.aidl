@@ -12,7 +12,7 @@ oneway interface IPlayControl {
     void pause();
     void previous();
     void next();
-    void seekTo(long progress);
+    void seekTo(int progress);
     void setData(String data);
     void setMusicList(in List<Music> list);
     void setPlayList(in List<Play> list);

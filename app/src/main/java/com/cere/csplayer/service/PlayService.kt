@@ -67,7 +67,7 @@ class PlayService : Service() {
             TODO("Not yet implemented")
         }
 
-        override fun onSeekTo(progress: Long) {
+        override fun onSeekTo(progress: Int) {
             TODO("Not yet implemented")
         }
 

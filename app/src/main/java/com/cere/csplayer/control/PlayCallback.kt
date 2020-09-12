@@ -48,11 +48,11 @@ open class PlayCallback {
             handler.sendMessage(handler.obtainMessage(ON_DATA, data))
         }
 
-        override fun setDuration(duration: Long) {
+        override fun setDuration(duration: Int) {
             handler.sendMessage(handler.obtainMessage(ON_DURATION, duration))
         }
 
-        override fun setCurrentDuration(duration: Long) {
+        override fun setCurrentDuration(duration: Int) {
             handler.sendMessage(handler.obtainMessage(ON_CURRENT_DURATON, duration))
         }
 

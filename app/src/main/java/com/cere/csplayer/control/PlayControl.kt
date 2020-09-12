@@ -42,7 +42,7 @@ class PlayControl(
         iPlayControl!!.next()
     }
 
-    fun seekTo(progress: Long) {
+    fun seekTo(progress: Int) {
         iPlayControl!!.seekTo(progress)
     }
 
