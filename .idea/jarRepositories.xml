@@ -12,6 +12,11 @@
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="678779b3-6dd2-4c5e-bb38-675c89a9b173" />
+      <option name="name" value="678779b3-6dd2-4c5e-bb38-675c89a9b173" />
+      <option name="url" value="http://maven.aliyun.com/nexus/content/groups/public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="BintrayJCenter" />
       <option name="name" value="BintrayJCenter" />
       <option name="url" value="https://jcenter.bintray.com/" />
