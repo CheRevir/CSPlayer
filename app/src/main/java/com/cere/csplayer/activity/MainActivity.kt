@@ -1,7 +1,6 @@
 package com.cere.csplayer.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
