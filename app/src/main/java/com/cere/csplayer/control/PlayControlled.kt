@@ -3,6 +3,7 @@ package com.cere.csplayer.control
 import android.net.Uri
 import android.os.Bundle
 import android.os.RemoteCallbackList
+import com.cere.csplayer.data.FileData
 import com.cere.csplayer.entity.Music
 import com.cere.csplayer.entity.Play
 
@@ -19,7 +20,7 @@ abstract class PlayControlled {
     abstract fun onPrevious()
     abstract fun onNext()
     abstract fun onSeekTo(progress: Int)
-    abstract fun onData(data: Uri)
+    abstract fun onData(data: FileData)
     abstract fun onMusicList(list: List<Music>)
     abstract fun onPlayList(list: List<Play>)
     abstract fun onRepeatMode(repeatMode: Int)
@@ -35,10 +36,10 @@ abstract class PlayControlled {
             remoteCallbackList.finishBroadcast()
         }
 
-        fun setData(data: String) {
+        fun setData(id: Int) {
             val num = remoteCallbackList.beginBroadcast()
             for (i in 0 until num) {
-                remoteCallbackList.getBroadcastItem(i).setData(data)
+                remoteCallbackList.getBroadcastItem(i).setData(id)
             }
             remoteCallbackList.finishBroadcast()
         }
@@ -89,8 +90,8 @@ abstract class PlayControlled {
             this@PlayControlled.onSeekTo(progress)
         }
 
-        override fun setData(data: String) {
-            this@PlayControlled.onData(Uri.parse(data))
+        override fun setData(data: FileData) {
+            this@PlayControlled.onData(data)
         }
 
         override fun setMusicList(list: MutableList<Music>) {

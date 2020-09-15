@@ -19,15 +19,13 @@ import java.util.*
 @Entity(tableName = "music")
 data class Music(
     @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "id") var id: Int,
-    @ColumnInfo(name = "title") var title: String,
-    @ColumnInfo(name = "artist") var artist: String,
-    @ColumnInfo(name = "album") var album: String,
-    @ColumnInfo(name = "duration") var duration: Int,
-    @ColumnInfo(name = "star", defaultValue = "0") var star: Float,
-    @ColumnInfo(name = "parent") var parent: String
+    @ColumnInfo(name = "title") var title: String = "",
+    @ColumnInfo(name = "artist") var artist: String = "",
+    @ColumnInfo(name = "album") var album: String = "",
+    @ColumnInfo(name = "duration") var duration: Int = 0,
+    @ColumnInfo(name = "parent") var parent: String = "",
+    @ColumnInfo(name = "star", defaultValue = "0") var star: Float = 0f
 ) : Parcelable, Comparable<Music>, Serializable {
-
-    constructor(id: Int) : this(id, "", "", "", 0, 0f, "")
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -35,8 +33,8 @@ data class Music(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt(),
-        parcel.readFloat(),
-        parcel.readString()!!
+        parcel.readString()!!,
+        parcel.readFloat()
     )
 
     fun getData(): Uri {
@@ -48,11 +46,15 @@ data class Music(
     }
 
     override fun equals(other: Any?): Boolean {
-        return if (other is Music) id == other.id else false
+        if (this === other) return true
+        if (other is Music) {
+            return id == other.id
+        }
+        return false
     }
 
     override fun hashCode(): Int {
-        return id.hashCode()
+        return id
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -61,8 +63,8 @@ data class Music(
         parcel.writeString(artist)
         parcel.writeString(album)
         parcel.writeInt(duration)
-        parcel.writeFloat(star)
         parcel.writeString(parent)
+        parcel.writeFloat(star)
     }
 
     override fun describeContents(): Int {
@@ -85,5 +87,4 @@ data class Music(
             return arrayOfNulls(size)
         }
     }
-
 }

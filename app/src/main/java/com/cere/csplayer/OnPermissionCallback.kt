@@ -1,5 +1,6 @@
 package com.cere.csplayer
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import com.hjq.permissions.OnPermission

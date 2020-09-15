@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
+import com.cere.csplayer.data.FileData
 import com.cere.csplayer.entity.Music
 import com.cere.csplayer.entity.Play
 
@@ -46,8 +47,8 @@ class PlayControl(
         iPlayControl!!.seekTo(progress)
     }
 
-    fun setData(data: Uri) {
-        iPlayControl!!.setData(data.toString())
+    fun setData(data: FileData) {
+        iPlayControl!!.setData(data)
     }
 
     fun setMusicList(list: List<Music>) {

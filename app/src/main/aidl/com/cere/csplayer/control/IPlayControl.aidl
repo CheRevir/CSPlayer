@@ -3,6 +3,7 @@ package com.cere.csplayer.control;
 
 // Declare any non-default types here with import statements
 import android.os.Bundle;
+import com.cere.csplayer.data.FileData;
 import com.cere.csplayer.entity.Music;
 import com.cere.csplayer.entity.Play;
 import com.cere.csplayer.control.IPlayCallback;
@@ -13,7 +14,7 @@ oneway interface IPlayControl {
     void previous();
     void next();
     void seekTo(int progress);
-    void setData(String data);
+    void setData(in FileData data);
     void setMusicList(in List<Music> list);
     void setPlayList(in List<Play> list);
     void setRepeatMode(int repeatMode);

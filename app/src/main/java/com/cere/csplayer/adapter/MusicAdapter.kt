@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.DiffUtil
 import com.cere.csplayer.R
 import com.cere.csplayer.entity.Music
 import com.cere.csplayer.until.Utils
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 
 /**
  * Created by CheRevir on 2020/9/11
  */
 class MusicAdapter(private val context: Context) :
-    BaseAdapter<Music, MusicAdapter.ViewHolder>(context) {
+    BaseAdapter<Music, MusicAdapter.ViewHolder>(context), FastScrollRecyclerView.SectionedAdapter {
 
     fun getPosition(id: Int): Int {
         return list.indexOf(Music(id))
@@ -46,6 +47,10 @@ class MusicAdapter(private val context: Context) :
         holder.artist.text = list[position].artist
         holder.duration.text = Utils.timeToString(list[position].duration)
         holder.number.text = "${position + 1}/$itemCount"
+    }
+
+    override fun getSectionName(position: Int): String {
+        return list[position].title.substring(0, 1)
     }
 
     class ViewHolder(itemView: View) : BaseAdapter.ViewHolder(itemView) {

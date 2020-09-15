@@ -1,11 +1,13 @@
 package com.cere.csplayer.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.cere.csplayer.GlideApp
 import com.cere.csplayer.R
 import com.cere.csplayer.entity.Music
@@ -19,22 +21,22 @@ import java.util.*
 class AlbumArtAdapter(private val context: Context) :
     BaseAdapter<Play, AlbumArtAdapter.ViewHolder>(context) {
     var musics: List<Music> = ArrayList<Music>()
+    override var position: Int = -1
 
     fun getPosition(id: Int): Int {
         return list.indexOf(Play(id))
     }
 
-    override fun getCallback(): DiffUtil.ItemCallback<Play> {
-        return object : DiffUtil.ItemCallback<Play>() {
+    override fun getCallback(): DiffUtil.ItemCallback<Play> =
+        object : DiffUtil.ItemCallback<Play>() {
             override fun areItemsTheSame(oldItem: Play, newItem: Play): Boolean {
-                return oldItem.position == newItem.position
+                return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: Play, newItem: Play): Boolean {
                 return true
             }
         }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -44,11 +46,10 @@ class AlbumArtAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        val fd =
-            FileUtils.getFileData(context, musics[getPosition(list[position].position)].getData())
-        if (fd.exists) {
-            GlideApp.with(context).asBitmap().load(fd.fd).into(holder.iv)
-        }
+        val music = musics[getPosition(list[position].id)]
+        val fd = FileUtils.getFileData(context, music.getData())
+        GlideApp.with(context).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE).load(fd.fd)
+            .into(holder.iv)
     }
 
     class ViewHolder(itemView: View) : BaseAdapter.ViewHolder(itemView) {

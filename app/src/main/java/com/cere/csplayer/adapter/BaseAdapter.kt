@@ -16,20 +16,23 @@ abstract class BaseAdapter<T, V : BaseAdapter.ViewHolder>(private val context: C
     private val differ = AsyncListDiffer(this, getCallback())
     val list: List<T>
         get() = differ.currentList
-    var position = -1
-        private set
     private var before = 0
+    open var position = -1
+        set(value) {
+            field = value
+            this.notifyItemChanged(before, TIP)
+            this.notifyItemChanged(field, TIP)
+            this.before = field
+        }
 
     fun setList(list: List<T>) {
         differ.submitList(list)
     }
 
-    fun setPosition(position: Int) {
+    /*open fun setPosition(position: Int) {
         this.position = position
-        this.notifyItemChanged(before, TIP)
-        this.notifyItemChanged(position, TIP)
-        this.before = position
-    }
+
+    }*/
 
     override fun onBindViewHolder(holder: V, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {

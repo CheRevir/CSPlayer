@@ -13,7 +13,7 @@ import android.renderscript.ScriptIntrinsicBlur
  */
 object BitmapUtils {
     @JvmStatic
-    suspend fun getBitmapBlur(context: Context, bitmap: Bitmap, radius: Float): Bitmap {
+    fun getBitmapBlur(context: Context, bitmap: Bitmap, radius: Float): Bitmap {
         val outBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         val rs = RenderScript.create(context)
         val blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
@@ -29,7 +29,7 @@ object BitmapUtils {
     }
 
     @JvmStatic
-    suspend fun getBitmapScale(bitmap: Bitmap, width: Int, height: Int): Bitmap {
+    fun getBitmapScale(bitmap: Bitmap, width: Int, height: Int): Bitmap {
         return ThumbnailUtils.extractThumbnail(bitmap, width, height)
     }
 }

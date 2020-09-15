@@ -19,18 +19,13 @@ object FileUtils {
         var fd = FileData()
         when {
             XXPermissions.hasPermission(context, Permission.READ_EXTERNAL_STORAGE) -> {
-                try {
-                    fd.exists = true
-                    fd.fd = context.contentResolver.openFileDescriptor(uri, "r")
-                } catch (e: FileNotFoundException) {
-                    fd.exists = false
-                }
+                fd = getFD(context, uri)
             }
             context is Activity -> {
                 XXPermissions.with(context).permission(Permission.READ_EXTERNAL_STORAGE)
                     .request(object : OnPermissionCallback(context) {
                         override fun hasPermission(granted: MutableList<String>, all: Boolean) {
-                            fd = getFileData(context, uri)
+                            fd = getFD(context, uri)
                         }
                     })
             }
@@ -40,11 +35,22 @@ object FileUtils {
                     ?.request(object :
                         OnPermissionCallback(PermissionUtils.instance.activity!!) {
                         override fun hasPermission(granted: MutableList<String>, all: Boolean) {
-                            fd = getFileData(context, uri)
+                            fd = getFD(context, uri)
                         }
                     })
             }
         }
         return fd
+    }
+
+    private fun getFD(context: Context, uri: Uri): FileData {
+        val s = uri.toString()
+        val id = Integer.parseInt(s.substring(s.lastIndexOf("/") + 1))
+        return try {
+            val fd = context.contentResolver.openFileDescriptor(uri, "r")
+            FileData(id, true, fd)
+        } catch (e: FileNotFoundException) {
+            FileData(id, false)
+        }
     }
 }

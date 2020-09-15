@@ -13,21 +13,31 @@ import android.widget.SeekBar
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.cere.csplayer.Constants
+import com.cere.csplayer.GlideApp
 import com.cere.csplayer.R
 import com.cere.csplayer.activity.PlayViewModel
 import com.cere.csplayer.adapter.AlbumArtAdapter
 import com.cere.csplayer.data.AppDatabase
+import com.cere.csplayer.data.SharePre
+import com.cere.csplayer.glide.BlurTransformation
 import com.cere.csplayer.ui.BaseFragment
+import com.cere.csplayer.until.FileUtils
 import com.cere.csplayer.until.Utils
+import com.cere.csplayer.view.PageTransformer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class HomeFragment : BaseFragment(), View.OnClickListener {
     private lateinit var playViewModel: PlayViewModel
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var adapter: AlbumArtAdapter
+    private var smoothScroll = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,31 +80,58 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
             if (fromUser) {
                 GlobalScope.launch {
                     playViewModel.musics.value?.let {
-                        val music = it[adapter.position]
-                        music.star = rating
-                        AppDatabase.instance.getMusicDao().update(music)
+                        val music =
+                            AppDatabase.instance.getMusicDao().query(playViewModel.id.value!!)
+                        music?.let {
+                            it.star = rating
+                            AppDatabase.instance.getMusicDao().update(it)
+                        }
                     }
                 }
             }
         }
+        home_viewpager.setPageTransformer(PageTransformer())
+        home_viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                adapter.position = position
+                playViewModel.position.value = position
+                val music =
+                    playViewModel.musics.value!![adapter.getPosition(adapter.list[position].id)]
+                val fd = FileUtils.getFileData(requireContext(), music.getData())
+                if (fd.exists && playViewModel.control.isConnecting) {
+                    playViewModel.control.setData(fd)
+                }
+                GlideApp.with(requireContext()).asBitmap()
+                    .transform(BlurTransformation(requireContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .load(fd.fd).into(home_iv_background)
+            }
+        })
 
         homeViewModel.adapter.observe(viewLifecycleOwner) {
             adapter = it
             home_viewpager.adapter = it
         }
-
+        playViewModel.position.observe(viewLifecycleOwner) {
+            if (adapter.position != it) {
+                adapter.position = it
+                home_viewpager.setCurrentItem(adapter.position, smoothScroll)
+                if (!smoothScroll) {
+                    smoothScroll = true
+                }
+            }
+        }
         playViewModel.musics.observe(viewLifecycleOwner) {
-            Log.e("TAG", "HomeFragment -> onViewCreated: $it")
             adapter.musics = it
         }
         playViewModel.plays.observe(viewLifecycleOwner) {
-            Log.e("TAG", "HomeFragment -> onViewCreated: $it")
             adapter.setList(it)
         }
-        playViewModel.id.observe(viewLifecycleOwner) {
-            Log.e("TAG", "HomeFragment -> onViewCreated: $it")
-            adapter.setPosition(adapter.getPosition(id))
+        /*playViewModel.id.observe(viewLifecycleOwner) {
+
         }
+*/
         playViewModel.isPlay.observe(viewLifecycleOwner) {
             if (it) home_ib_play.setImageResource(R.drawable.ic_play)
             else home_ib_play.setImageResource(R.drawable.ic_pause)
@@ -119,6 +156,20 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
         playViewModel.star.observe(viewLifecycleOwner) {
             home_rating_bar.rating = it
         }
+        playViewModel.repeat.observe(viewLifecycleOwner) {
+            when (it) {
+                0 -> home_ib_repeat.setImageResource(R.drawable.ic_repeat_none)
+                1 -> home_ib_repeat.setImageResource(R.drawable.ic_repeat_single)
+                2 -> home_ib_repeat.setImageResource(R.drawable.ic_repeat_all)
+            }
+        }
+        playViewModel.shuffle.observe(viewLifecycleOwner) {
+            if (it) {
+                home_ib_shuffle.setImageResource(R.drawable.ic_shuffle_all)
+            } else {
+                home_ib_shuffle.setImageResource(R.drawable.ic_shuffle_none)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -132,7 +183,37 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.home_ib_play -> {
-                playViewModel.control.play()
+                playViewModel.isPlay.value?.let {
+                    if (it) playViewModel.control.pause()
+                    else playViewModel.control.play()
+                }
+            }
+            R.id.home_ib_prev -> {
+                if (adapter.position == 0) {
+                    smoothScroll = false
+                }
+                playViewModel.previous()
+            }
+            R.id.home_ib_next -> {
+                if (adapter.position == adapter.list.size - 1) {
+                    smoothScroll = false
+                }
+                playViewModel.next()
+            }
+            R.id.home_ib_repeat -> {
+                var repeat = playViewModel.repeat.value!!
+                repeat++
+                if (repeat > 2) {
+                    repeat = 0
+                }
+                playViewModel.repeat.value = repeat
+                SharePre.putInt(Constants.MODE_REPEAT, repeat)
+            }
+            R.id.home_ib_shuffle -> {
+                var shuffle = playViewModel.shuffle.value!!
+                shuffle = !shuffle
+                playViewModel.shuffle.value = shuffle
+                SharePre.putBoolean(Constants.MODE_SHUFFLE, shuffle)
             }
         }
     }

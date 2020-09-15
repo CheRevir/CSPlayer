@@ -1,6 +1,7 @@
 package com.cere.csplayer.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
@@ -27,7 +28,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         PermissionUtils.instance.activity = this
         setContentView(R.layout.activity_main)
-
         playViewModel = ViewModelProvider(this).get(PlayViewModel::class.java)
 
         setSupportActionBar(main_toolbar)
@@ -139,7 +139,7 @@ class MainActivity : BaseActivity() {
             adapter.setList(it)
         }
         playViewModel.id.observe(this) {
-            adapter.setPosition(adapter.getPosition(it))
+            adapter.position = adapter.getPosition(it)
         }
     }
 

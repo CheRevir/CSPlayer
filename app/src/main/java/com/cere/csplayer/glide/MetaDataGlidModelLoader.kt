@@ -21,10 +21,6 @@ class MetaDataGlidModelLoader : ModelLoader<ParcelFileDescriptor, ByteBuffer> {
         override fun teardown() {}
     }
 
-    /*override fun buildLoadData(s: String, width: Int, height: Int, options: Options): LoadData<ByteBuffer> {
-        return LoadData(ObjectKey(s), MetaDataFetcher(s))
-    }*/
-
     override fun buildLoadData(
         model: ParcelFileDescriptor,
         width: Int,

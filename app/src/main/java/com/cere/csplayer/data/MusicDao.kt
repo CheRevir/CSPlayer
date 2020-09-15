@@ -32,11 +32,8 @@ interface MusicDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(music: Music): Int
 
-    @Query("select * from music order by title")
-    fun queryAll(): LiveData<List<Music>>
-
-    @Query("select * from music")
-    suspend fun query(): List<Music>
+    @Query("select * from music order by case when :order=1 then title end collate nocase asc,case when :order=-1 then title end collate nocase desc")
+    fun queryAll(order: Int): LiveData<List<Music>>
 
     @Query("select * from music where id=:id")
     suspend fun query(id: Int): Music?

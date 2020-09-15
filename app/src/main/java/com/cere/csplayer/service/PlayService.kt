@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.cere.csplayer.activity.MainActivity
 import com.cere.csplayer.control.PlayControlled
+import com.cere.csplayer.data.FileData
 import com.cere.csplayer.entity.Music
 import com.cere.csplayer.entity.Play
 
@@ -52,48 +53,39 @@ class PlayService : Service() {
 
     private inner class Controlled : PlayControlled() {
         override fun onPlay() {
-            TODO("Not yet implemented")
+            callback.setPlay(true)
         }
 
         override fun onPause() {
-            TODO("Not yet implemented")
+            callback.setPlay(false)
         }
 
         override fun onPrevious() {
-            TODO("Not yet implemented")
         }
 
         override fun onNext() {
-            TODO("Not yet implemented")
         }
 
         override fun onSeekTo(progress: Int) {
-            TODO("Not yet implemented")
         }
 
-        override fun onData(data: Uri) {
-            Log.e("TAG", "Controlled -> onData: ${Thread.currentThread().name}");
-            Log.e("TAG", "Controlled -> onData: $data");
+        override fun onData(data: FileData) {
+            callback.setData(data.id)
         }
 
         override fun onMusicList(list: List<Music>) {
-            TODO("Not yet implemented")
         }
 
         override fun onPlayList(list: List<Play>) {
-            TODO("Not yet implemented")
         }
 
         override fun onRepeatMode(repeatMode: Int) {
-            TODO("Not yet implemented")
         }
 
         override fun onShuffleMode(shuffleMode: Boolean) {
-            TODO("Not yet implemented")
         }
 
         override fun onAction(action: String, bundle: Bundle?) {
-            TODO("Not yet implemented")
         }
     }
 }

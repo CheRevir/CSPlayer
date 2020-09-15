@@ -6,6 +6,8 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import com.cere.csplayer.Constants
+import com.cere.csplayer.data.SharePre
 import com.cere.csplayer.entity.Music
 
 /**
@@ -28,12 +30,17 @@ class MusicScanner(private val context: Context, private val listener: OnMusicSc
             MediaStore.Audio.Media.DURATION,
             parentKey
         )
+        var order = "_id"
+        when (SharePre.getInt(Constants.LIST_ORDER, 1)) {
+            1 -> order = "title asc"
+            -1 -> order = "title desc"
+        }
         context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
             null,
             null,
-            MediaStore.Audio.Media._ID
+            order
         )?.let { cursor ->
             while (cursor.moveToNext()) {
                 val id = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
@@ -53,7 +60,7 @@ class MusicScanner(private val context: Context, private val listener: OnMusicSc
                     )
                     parent = parent.substring(0, parent.lastIndexOf("/"))
                 }
-                list.add(Music(id, title, artist, album, duration, 0f, parent))
+                list.add(Music(id, title, artist, album, duration, parent))
             }
             cursor.close()
         }

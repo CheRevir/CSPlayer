@@ -16,14 +16,14 @@ open class PlayCallback {
         private const val ON_PLAY = 0x1230
         private const val ON_DATA = 0x1231
         private const val ON_DURATION = 0x1232
-        private const val ON_CURRENT_DURATON = 0x1233
+        private const val ON_CURRENT_DURATION = 0x1233
         private const val ON_ACTION = 0x1234
     }
 
     open fun onPlay(isPlay: Boolean) {}
-    open fun onData(data: String) {}
-    open fun onDuration(duration: Long) {}
-    open fun onCurrentDuration(duration: Long) {}
+    open fun onData(id: Int) {}
+    open fun onDuration(duration: Int) {}
+    open fun onCurrentDuration(duration: Int) {}
     open fun onAction(action: String, bundle: Bundle?) {}
 
     private inner class MainHandler(looper: Looper) : Handler(looper) {
@@ -31,9 +31,9 @@ open class PlayCallback {
             super.handleMessage(msg)
             when (msg.what) {
                 ON_PLAY -> onPlay(msg.obj as Boolean)
-                ON_DATA -> onData(msg.obj.toString())
-                ON_DURATION -> onDuration((msg.obj as Long).toLong())
-                ON_CURRENT_DURATON -> onCurrentDuration((msg.obj as Long).toLong())
+                ON_DATA -> onData(msg.arg1)
+                ON_DURATION -> onDuration(msg.arg1)
+                ON_CURRENT_DURATION -> onCurrentDuration(msg.arg1)
                 ON_ACTION -> onAction(msg.obj.toString(), msg.data)
             }
         }
@@ -44,16 +44,16 @@ open class PlayCallback {
             handler.sendMessage(handler.obtainMessage(ON_PLAY, isPlay))
         }
 
-        override fun setData(data: String) {
-            handler.sendMessage(handler.obtainMessage(ON_DATA, data))
+        override fun setData(id: Int) {
+            handler.sendMessage(handler.obtainMessage(ON_DATA, id, 0))
         }
 
         override fun setDuration(duration: Int) {
-            handler.sendMessage(handler.obtainMessage(ON_DURATION, duration))
+            handler.sendMessage(handler.obtainMessage(ON_DURATION, duration, 0))
         }
 
         override fun setCurrentDuration(duration: Int) {
-            handler.sendMessage(handler.obtainMessage(ON_CURRENT_DURATON, duration))
+            handler.sendMessage(handler.obtainMessage(ON_CURRENT_DURATION, duration, 0))
         }
 
         override fun sendAction(action: String, bundle: Bundle?) {
