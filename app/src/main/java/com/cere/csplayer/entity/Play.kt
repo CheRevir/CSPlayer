@@ -1,7 +1,9 @@
 package com.cere.csplayer.entity
 
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import android.provider.MediaStore
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,6 +18,10 @@ data class Play(
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(parcel.readInt(), parcel.readInt())
+
+    fun getData(): Uri {
+        return Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id.toString())
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -7,4 +7,5 @@ import com.cere.csplayer.adapter.AlbumArtAdapter
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val adapter = MutableLiveData(AlbumArtAdapter(application))
+    val isFirst = MutableLiveData(true)
 }

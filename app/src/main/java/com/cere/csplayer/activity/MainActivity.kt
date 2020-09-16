@@ -11,29 +11,33 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cere.csplayer.Constants
 import com.cere.csplayer.R
 import com.cere.csplayer.adapter.MusicAdapter
+import com.cere.csplayer.adapter.RecyclerViewListener
+import com.cere.csplayer.ui.home.HomeFragment
 import com.cere.csplayer.until.PermissionUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_right.*
 
 class MainActivity : BaseActivity() {
-    companion object{
+    companion object {
         init {
             System.loadLibrary("native-lib")
         }
     }
+
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     private lateinit var playViewModel: PlayViewModel
 
     private lateinit var adapter: MusicAdapter
+    private var isFirst = true
 
     private external fun string(i: Int): String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e("TAG", "MainActivity -> onCreate: ${string(1)}")
         PermissionUtils.instance.activity = this
         setContentView(R.layout.activity_main)
         playViewModel = ViewModelProvider(this).get(PlayViewModel::class.java)
@@ -142,12 +146,35 @@ class MainActivity : BaseActivity() {
         main_right_recyclerview.adapter = adapter
         main_right_recyclerview.layoutManager = LinearLayoutManager(this)
         main_right_recyclerview.setHasFixedSize(true)
+        main_right_recyclerview.addOnItemTouchListener(
+            RecyclerViewListener(main_right_recyclerview,
+                object : RecyclerViewListener.OnRecyclerItemListener {
+                    override fun onItemClick(position: Int) {
+                        if (fragment is HomeFragment) {
+                            fragment!!.onAction(Constants.ACTION_HOME_SMOOTH_SCROLL)
+                        }
+                        playViewModel.position.value = position
+                    }
+
+                    override fun onItemLongClick(position: Int) {
+                    }
+                })
+        )
 
         playViewModel.musics.observe(this) {
             adapter.setList(it)
+            main_right_recyclerview.scrollToPosition(adapter.position)
         }
         playViewModel.id.observe(this) {
             adapter.position = adapter.getPosition(it)
+            if (isFirst) {
+                isFirst = false
+                main_right_recyclerview.scrollToPosition(adapter.position)
+            }
+        }
+
+        main_right_bottom_fab.setOnClickListener {
+            main_right_recyclerview.smoothScrollToPosition(adapter.position)
         }
     }
 

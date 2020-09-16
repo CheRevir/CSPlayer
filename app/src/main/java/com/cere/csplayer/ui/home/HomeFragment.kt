@@ -2,7 +2,6 @@ package com.cere.csplayer.ui.home
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -30,7 +29,6 @@ import com.cere.csplayer.view.PageTransformer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class HomeFragment : BaseFragment(), View.OnClickListener {
@@ -91,47 +89,30 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
             }
         }
         home_viewpager.setPageTransformer(PageTransformer())
-        home_viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                adapter.position = position
-                playViewModel.position.value = position
-                val music =
-                    playViewModel.musics.value!![adapter.getPosition(adapter.list[position].id)]
-                val fd = FileUtils.getFileData(requireContext(), music.getData())
-                if (fd.exists && playViewModel.control.isConnecting) {
-                    playViewModel.control.setData(fd)
-                }
-                GlideApp.with(requireContext()).asBitmap()
-                    .transform(BlurTransformation(requireContext()))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .load(fd.fd).into(home_iv_background)
-            }
-        })
+        home_viewpager.registerOnPageChangeCallback(PageChangeCallback())
 
         homeViewModel.adapter.observe(viewLifecycleOwner) {
             adapter = it
             home_viewpager.adapter = it
         }
         playViewModel.position.observe(viewLifecycleOwner) {
-            if (adapter.position != it) {
-                adapter.position = it
-                home_viewpager.setCurrentItem(adapter.position, smoothScroll)
-                if (!smoothScroll) {
-                    smoothScroll = true
-                }
+            adapter.position = it
+            home_viewpager.setCurrentItem(adapter.position, smoothScroll)
+            if (!smoothScroll) {
+                smoothScroll = true
+            }
+            if (homeViewModel.isFirst.value!!) {
+                homeViewModel.isFirst.value = false
+                PageChangeCallback().onPageSelected(it)
             }
         }
-        playViewModel.musics.observe(viewLifecycleOwner) {
+        /*playViewModel.musics.observe(viewLifecycleOwner) {
             adapter.musics = it
-        }
+        }*/
         playViewModel.plays.observe(viewLifecycleOwner) {
             adapter.setList(it)
         }
-        /*playViewModel.id.observe(viewLifecycleOwner) {
 
-        }
-*/
         playViewModel.isPlay.observe(viewLifecycleOwner) {
             if (it) home_ib_play.setImageResource(R.drawable.ic_play)
             else home_ib_play.setImageResource(R.drawable.ic_pause)
@@ -156,6 +137,9 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
         playViewModel.star.observe(viewLifecycleOwner) {
             home_rating_bar.rating = it
         }
+        playViewModel.number.observe(viewLifecycleOwner) {
+            home_tv_number.text = it
+        }
         playViewModel.repeat.observe(viewLifecycleOwner) {
             when (it) {
                 0 -> home_ib_repeat.setImageResource(R.drawable.ic_repeat_none)
@@ -178,6 +162,33 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
         requireActivity().main_toolbar.setBackgroundColor(requireActivity().getColor(R.color.colorPrimary))
         requireActivity().main_toolbar.overflowIcon =
             AppCompatResources.getDrawable(requireContext(), R.drawable.ic_menu_overflow_material)
+    }
+
+    private inner class PageChangeCallback : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            if (!homeViewModel.isFirst.value!!) {
+                playViewModel.position.value = position
+                /* val music =
+                     playViewModel.musics.value!![adapter.getPosition(adapter.list[position].id)]*/
+                val fd = FileUtils.getFileData(requireContext(), adapter.list[position].getData())
+                if (fd.exists && playViewModel.control.isConnecting) {
+                    playViewModel.control.setData(fd)
+                }
+                GlideApp.with(requireContext()).asBitmap()
+                    .error(R.drawable.clannad)
+                    .transform(BlurTransformation(requireContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .load(fd.fd).into(home_iv_background)
+            }
+        }
+    }
+
+    override fun onAction(string: String) {
+        super.onAction(string)
+        if (string == Constants.ACTION_HOME_SMOOTH_SCROLL) {
+            smoothScroll = false
+        }
     }
 
     override fun onClick(v: View?) {
@@ -213,6 +224,18 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
                 var shuffle = playViewModel.shuffle.value!!
                 shuffle = !shuffle
                 playViewModel.shuffle.value = shuffle
+                GlobalScope.launch {
+                    val id = adapter.list[adapter.position].id
+                    playViewModel.manager.buildPlays(adapter.position)
+                    if (shuffle) {
+                        playViewModel.position.postValue(0)
+                        //SharePre.putInt(Constants.MUSIC_POSITION, 0)
+                    } else {
+                        val position = adapter.getPosition(id)
+                        playViewModel.position.postValue(position)
+                        //SharePre.putInt(Constants.MUSIC_POSITION, position)
+                    }
+                }
                 SharePre.putBoolean(Constants.MODE_SHUFFLE, shuffle)
             }
         }

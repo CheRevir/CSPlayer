@@ -18,6 +18,10 @@ abstract class BaseFragment : Fragment() {
         return false
     }
 
+    open fun onAction(string: String) {
+
+    }
+
     interface OnFragmentChangeListener {
         fun onFragmentChange(fragment: BaseFragment)
     }

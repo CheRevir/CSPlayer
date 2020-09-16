@@ -20,7 +20,7 @@ import java.util.*
  */
 class AlbumArtAdapter(private val context: Context) :
     BaseAdapter<Play, AlbumArtAdapter.ViewHolder>(context) {
-    var musics: List<Music> = ArrayList<Music>()
+    //var musics: List<Music> = ArrayList<Music>()
     override var position: Int = -1
 
     fun getPosition(id: Int): Int {
@@ -46,8 +46,7 @@ class AlbumArtAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        val music = musics[getPosition(list[position].id)]
-        val fd = FileUtils.getFileData(context, music.getData())
+        val fd = FileUtils.getFileData(context, list[position].getData())
         GlideApp.with(context).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE).load(fd.fd)
             .into(holder.iv)
     }

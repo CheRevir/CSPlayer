@@ -12,7 +12,6 @@ import com.cere.csplayer.data.AppDatabase
 import com.cere.csplayer.data.SharePre
 import com.cere.csplayer.service.PlayService
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 /**
@@ -132,10 +131,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
                     artist.postValue(it.artist)
                     album.postValue(it.album)
                     star.postValue(it.star)
-                    //number.postValue(music.number)
+                    number.postValue("${position.value!! + 1}/${plays.value!!.size}")
                 }
             }
             this@PlayViewModel.id.value = id
+            SharePre.putInt(Constants.MUSIC_POSITION, position.value!!)
         }
     }
 }

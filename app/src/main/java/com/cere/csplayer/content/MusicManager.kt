@@ -1,9 +1,6 @@
 package com.cere.csplayer.content
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.util.Log
 import com.cere.csplayer.Constants
 import com.cere.csplayer.OnPermissionCallback
 import com.cere.csplayer.data.AppDatabase
@@ -28,7 +25,6 @@ class MusicManager(private val context: Context) :
     lateinit var plays: List<Play>
 
     override fun onMusicScanDone(list: List<Music>) {
-        Log.e("TAG", "MusicManager -> onMusicScanDone: ")
         if (list.isNotEmpty()) {
             Observable.create<List<Music>> { ob ->
                 ob.onNext(Utils.deepCopy(musics))
@@ -73,6 +69,12 @@ class MusicManager(private val context: Context) :
         }
     }
 
+    suspend fun buildPlays(position: Int) {
+        val list = musicsToPlays(musics, Play(position))
+        AppDatabase.instance.getPlayDao().deleteAll()
+        AppDatabase.instance.getPlayDao().insert(list)
+    }
+
     private fun musicsToPlays(list: List<Music>, play: Play): List<Play> {
         val plays = ArrayList<Play>(list.size)
         list.forEach {
@@ -82,9 +84,6 @@ class MusicManager(private val context: Context) :
             plays.shuffle()
             plays[plays.indexOf(play)] = plays[0]
             plays[0] = play
-            SharePre.putInt(Constants.MUSIC_POSITION, 0)
-        } else {
-            SharePre.putInt(Constants.MUSIC_POSITION, plays.indexOf(play))
         }
         return plays
     }
@@ -108,7 +107,8 @@ class MusicManager(private val context: Context) :
         if (XXPermissions.hasPermission(context, Permission.READ_EXTERNAL_STORAGE)) {
             MusicScanner(context, this).execute()
         } else {
-            PermissionUtils.instance.getXXPermissions()?.permission(Permission.READ_EXTERNAL_STORAGE)
+            PermissionUtils.instance.getXXPermissions()
+                ?.permission(Permission.READ_EXTERNAL_STORAGE)
                 ?.request(
                     object : OnPermissionCallback(context) {
                         override fun hasPermission(granted: MutableList<String>, all: Boolean) {
