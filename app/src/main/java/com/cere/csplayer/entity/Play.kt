@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 /**
  * Created by CheRevir on 2020/9/5
@@ -15,7 +16,7 @@ import androidx.room.PrimaryKey
 data class Play(
     @ColumnInfo(name = "id") var id: Int,
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") var ID: Int = 0
-) : Parcelable {
+) : Parcelable, Serializable {
 
     constructor(parcel: Parcel) : this(parcel.readInt(), parcel.readInt())
 

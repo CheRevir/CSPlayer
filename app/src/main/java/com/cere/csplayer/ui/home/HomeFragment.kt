@@ -21,6 +21,7 @@ import com.cere.csplayer.activity.PlayViewModel
 import com.cere.csplayer.adapter.AlbumArtAdapter
 import com.cere.csplayer.data.AppDatabase
 import com.cere.csplayer.data.SharePre
+import com.cere.csplayer.entity.Music
 import com.cere.csplayer.glide.BlurTransformation
 import com.cere.csplayer.ui.BaseFragment
 import com.cere.csplayer.until.FileUtils
@@ -167,7 +168,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
     private inner class PageChangeCallback : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-            if (!homeViewModel.isFirst.value!!) {
+            if (!homeViewModel.isFirst.value!! && adapter.list.isNotEmpty()) {
                 playViewModel.position.value = position
                 /* val music =
                      playViewModel.musics.value!![adapter.getPosition(adapter.list[position].id)]*/
@@ -224,19 +225,20 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
                 var shuffle = playViewModel.shuffle.value!!
                 shuffle = !shuffle
                 playViewModel.shuffle.value = shuffle
-                GlobalScope.launch {
-                    val id = adapter.list[adapter.position].id
-                    playViewModel.manager.buildPlays(adapter.position)
-                    if (shuffle) {
-                        playViewModel.position.postValue(0)
-                        //SharePre.putInt(Constants.MUSIC_POSITION, 0)
-                    } else {
-                        val position = adapter.getPosition(id)
-                        playViewModel.position.postValue(position)
-                        //SharePre.putInt(Constants.MUSIC_POSITION, position)
-                    }
-                }
                 SharePre.putBoolean(Constants.MODE_SHUFFLE, shuffle)
+                GlobalScope.launch {
+                    playViewModel.isReload = true
+                    val id = adapter.list[adapter.position].id
+                    if (shuffle) {
+                        //playViewModel.position.postValue(0)
+                        SharePre.putInt(Constants.MUSIC_POSITION, 0)
+                    } else {
+                        val position = playViewModel.musics.value!!.indexOf(Music(id))
+                        //playViewModel.position.postValue(position)
+                        SharePre.putInt(Constants.MUSIC_POSITION, position)
+                    }
+                    playViewModel.manager.buildPlays(id)
+                }
             }
         }
     }

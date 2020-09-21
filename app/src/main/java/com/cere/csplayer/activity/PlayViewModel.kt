@@ -29,6 +29,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
     private var isFirst = true
     private var isScan = false
     private var isLoad = false
+    var isReload = false
 
     val id = MutableLiveData<Int>()
     val isPlay = MutableLiveData(false)
@@ -52,6 +53,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
         plays.observeForever {
             manager.plays = it
             scan()
+            if (isReload) {
+                isReload = false
+                load()
+            }
         }
     }
 
@@ -113,6 +118,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
 
     override fun onServiceDisconnected() {
         Log.e("TAG", "PlayViewModel -> onServiceDisconnected: ")
+        isFirst = true
+        isScan = false
+        isLoad = false
         control = PlayControl(getApplication(), PlayService::class.java, this)
     }
 

@@ -1,6 +1,7 @@
 package com.cere.csplayer.content
 
 import android.content.Context
+import android.util.Log
 import com.cere.csplayer.Constants
 import com.cere.csplayer.OnPermissionCallback
 import com.cere.csplayer.data.AppDatabase
@@ -69,10 +70,11 @@ class MusicManager(private val context: Context) :
         }
     }
 
-    suspend fun buildPlays(position: Int) {
-        val list = musicsToPlays(musics, Play(position))
-        AppDatabase.instance.getPlayDao().deleteAll()
+    suspend fun buildPlays(id: Int) {
+        val list = musicsToPlays(musics, Play(id))
+        val p = Utils.deepCopy(plays)
         AppDatabase.instance.getPlayDao().insert(list)
+        AppDatabase.instance.getPlayDao().delete(p)
     }
 
     private fun musicsToPlays(list: List<Music>, play: Play): List<Play> {
@@ -82,6 +84,8 @@ class MusicManager(private val context: Context) :
         }
         if (SharePre.getBoolean(Constants.MODE_SHUFFLE, false)) {
             plays.shuffle()
+            Log.e("TAG", "MusicManager -> musicsToPlays: $play")
+            Log.e("TAG", "MusicManager -> musicsToPlays: $plays")
             plays[plays.indexOf(play)] = plays[0]
             plays[0] = play
         }
