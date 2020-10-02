@@ -185,12 +185,16 @@ class MainActivity : BaseActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (main_drawer_layout.isDrawerOpen(GravityCompat.START)) {
-                main_drawer_layout.closeDrawer(GravityCompat.START)
-            } else if (main_drawer_layout.isDrawerOpen(GravityCompat.END)) {
-                main_drawer_layout.closeDrawer(GravityCompat.END)
-            } else if (!fragment!!.onBackPressed()) {
-                return super.onKeyDown(keyCode, event)
+            when {
+                main_drawer_layout.isDrawerOpen(GravityCompat.START) -> {
+                    main_drawer_layout.closeDrawer(GravityCompat.START)
+                }
+                main_drawer_layout.isDrawerOpen(GravityCompat.END) -> {
+                    main_drawer_layout.closeDrawer(GravityCompat.END)
+                }
+                fragment?.onBackPressed() != true -> {
+                    return super.onKeyDown(keyCode, event)
+                }
             }
             return true
         }

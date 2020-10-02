@@ -7,11 +7,6 @@ import android.content.Context
  * Created by CheRevir on 2020/9/5
  */
 class App : Application() {
-    companion object {
-        lateinit var context: Context
-            private set
-    }
-
     override fun onCreate() {
         super.onCreate()
         context = this
@@ -20,5 +15,10 @@ class App : Application() {
         } else {
             startService(Intent(this, PlayService::class.java))
         }*/
+    }
+
+    companion object {
+        lateinit var context: Context
+            private set
     }
 }
