@@ -9,33 +9,30 @@ import androidx.recyclerview.widget.RecyclerView
  * Created by CheRevir on 2020/9/16
  */
 class RecyclerViewListener(
-    recyclerView: RecyclerView,
-    listener: OnRecyclerItemListener
+    private val recyclerView: RecyclerView,
+    private val listener: OnRecyclerItemListener
 ) :
-    RecyclerView.OnItemTouchListener {
-    private var detector: GestureDetectorCompat
+    GestureDetector.SimpleOnGestureListener(), RecyclerView.OnItemTouchListener {
+    private var detector: GestureDetectorCompat = GestureDetectorCompat(recyclerView.context, this)
 
-    init {
-        detector =
-            GestureDetectorCompat(
-                recyclerView.context,
-                object : GestureDetector.SimpleOnGestureListener() {
-                    override fun onSingleTapUp(e: MotionEvent?): Boolean {
-                        val view = recyclerView.findChildViewUnder(e!!.x, e.y)
-                        view?.let {
-                            listener.onItemClick(recyclerView.getChildAdapterPosition(view))
-                        }
-                        return true
-                    }
+    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+        return e?.let {
+            val view = recyclerView.findChildViewUnder(e.x, e.y)
+            view?.let { v ->
+                listener.onItemClick(recyclerView.getChildAdapterPosition(v))
+                true
+            } ?: false
+        } ?: false
+    }
 
-                    override fun onLongPress(e: MotionEvent?) {
-                        super.onLongPress(e)
-                        val view = recyclerView.findChildViewUnder(e!!.x, e.y)
-                        view?.let {
-                            listener.onItemLongClick(recyclerView.getChildAdapterPosition(view))
-                        }
-                    }
-                })
+    override fun onLongPress(e: MotionEvent?) {
+        super.onLongPress(e)
+        e?.let {
+            val view = recyclerView.findChildViewUnder(e.x, e.y)
+            view?.let { v ->
+                listener.onItemLongClick(recyclerView.getChildAdapterPosition(v))
+            }
+        }
     }
 
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {

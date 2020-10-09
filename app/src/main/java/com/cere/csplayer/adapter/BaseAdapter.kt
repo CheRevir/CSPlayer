@@ -38,7 +38,7 @@ abstract class BaseAdapter<T, V : BaseAdapter.ViewHolder>(private val context: C
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
         } else if (payloads[0] as Int == TIP) {
-            holder.getTip()?.let {
+            holder.tip?.let {
                 if (this@BaseAdapter.position == position) {
                     it.setBackgroundColor(context.getColor(R.color.colorAccent))
                 } else {
@@ -49,7 +49,7 @@ abstract class BaseAdapter<T, V : BaseAdapter.ViewHolder>(private val context: C
     }
 
     override fun onBindViewHolder(holder: V, position: Int) {
-        holder.getTip()?.let {
+        holder.tip?.let {
             if (this@BaseAdapter.position == position) {
                 it.setBackgroundColor(context.getColor(R.color.colorAccent))
             } else {
@@ -59,13 +59,13 @@ abstract class BaseAdapter<T, V : BaseAdapter.ViewHolder>(private val context: C
     }
 
     override fun getItemCount(): Int {
-        return differ.currentList.size
+        return list.size
     }
 
     abstract fun getCallback(): DiffUtil.ItemCallback<T>
 
     abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        abstract fun getTip(): View?
+        abstract val tip: View?
     }
 
     companion object {

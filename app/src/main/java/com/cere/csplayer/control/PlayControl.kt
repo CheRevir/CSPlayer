@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
 import com.cere.csplayer.data.FileData
@@ -28,55 +27,55 @@ class PlayControl(
     }
 
     fun play() {
-        iPlayControl!!.play()
+        iPlayControl?.play()
     }
 
     fun pause() {
-        iPlayControl!!.pause()
+        iPlayControl?.pause()
     }
 
     fun previous() {
-        iPlayControl!!.previous()
+        iPlayControl?.previous()
     }
 
     fun next() {
-        iPlayControl!!.next()
+        iPlayControl?.next()
     }
 
     fun seekTo(progress: Int) {
-        iPlayControl!!.seekTo(progress)
+        iPlayControl?.seekTo(progress)
     }
 
     fun setData(data: FileData) {
-        iPlayControl!!.setData(data)
+        iPlayControl?.setData(data)
     }
 
     fun setMusicList(list: List<Music>) {
-        iPlayControl!!.setMusicList(list)
+        iPlayControl?.setMusicList(list)
     }
 
     fun setPlayList(list: List<Play>) {
-        iPlayControl!!.setPlayList(list)
+        iPlayControl?.setPlayList(list)
     }
 
     fun setRepeatMode(repeatMode: Int) {
-        iPlayControl!!.setRepeatMode(repeatMode)
+        iPlayControl?.setRepeatMode(repeatMode)
     }
 
     fun setShuffleMode(shuffleMode: Boolean) {
-        iPlayControl!!.setShuffleMode(shuffleMode)
+        iPlayControl?.setShuffleMode(shuffleMode)
     }
 
     fun sendAction(action: String, bundle: Bundle?) {
-        iPlayControl!!.sendAction(action, bundle)
+        iPlayControl?.sendAction(action, bundle)
     }
 
     fun registerCallback(callback: IPlayCallback) {
-        iPlayControl!!.registerCallback(callback)
+        iPlayControl?.registerCallback(callback)
     }
 
     fun unregisterCallback(callback: IPlayCallback) {
-        iPlayControl!!.unregisterCallback(callback)
+        iPlayControl?.unregisterCallback(callback)
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

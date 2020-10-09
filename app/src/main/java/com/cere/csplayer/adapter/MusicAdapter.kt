@@ -22,6 +22,26 @@ class MusicAdapter(private val context: Context) :
         return list.indexOf(Music(id))
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            LayoutInflater.from(context).inflate(R.layout.adapter_music, parent, false)
+        )
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+        val music = list[position]
+        holder.title.text = music.title
+        holder.artist.text = music.artist
+        holder.duration.text = Utils.timeToString(music.duration)
+        holder.number.text = "${position + 1}/$itemCount"
+    }
+
+    override fun getSectionName(position: Int): String {
+        return list[position].title.substring(0, 1)
+    }
+
     override fun getCallback(): DiffUtil.ItemCallback<Music> {
         return object : DiffUtil.ItemCallback<Music>() {
             override fun areItemsTheSame(oldItem: Music, newItem: Music): Boolean {
@@ -34,33 +54,11 @@ class MusicAdapter(private val context: Context) :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(context).inflate(R.layout.adapter_music, parent, false)
-        )
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-        holder.title.text = list[position].title
-        holder.artist.text = list[position].artist
-        holder.duration.text = Utils.timeToString(list[position].duration)
-        holder.number.text = "${position + 1}/$itemCount"
-    }
-
-    override fun getSectionName(position: Int): String {
-        return list[position].title.substring(0, 1)
-    }
-
     class ViewHolder(itemView: View) : BaseAdapter.ViewHolder(itemView) {
+        override val tip: View? = itemView.findViewById(R.id.adapter_music_tip)
         val title: TextView = itemView.findViewById(R.id.adapter_music_tv_title)
         val artist: TextView = itemView.findViewById(R.id.adapter_music_tv_artist)
         val duration: TextView = itemView.findViewById(R.id.adapter_music_tv_duration)
         val number: TextView = itemView.findViewById(R.id.adapter_music_tv_number)
-
-        override fun getTip(): View? {
-            return itemView.findViewById(R.id.adapter_music_tip)
-        }
     }
 }
