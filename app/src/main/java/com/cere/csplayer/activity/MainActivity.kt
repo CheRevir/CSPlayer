@@ -1,7 +1,6 @@
 package com.cere.csplayer.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
@@ -11,10 +10,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cere.csplayer.App
 import com.cere.csplayer.Constants
 import com.cere.csplayer.R
 import com.cere.csplayer.adapter.MusicAdapter
 import com.cere.csplayer.adapter.RecyclerViewListener
+import com.cere.csplayer.content.MusicManager
 import com.cere.csplayer.ui.home.HomeFragment
 import com.cere.csplayer.until.PermissionUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -40,7 +41,13 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         PermissionUtils.instance.activity = this
         setContentView(R.layout.activity_main)
-        playViewModel = ViewModelProvider(this).get(PlayViewModel::class.java)
+        playViewModel =
+            ViewModelProvider(
+                this,
+                PlayViewModelFactory(App.control, MusicManager(this))
+            ).get(
+                PlayViewModel::class.java
+            )
 
         setSupportActionBar(main_toolbar)
 

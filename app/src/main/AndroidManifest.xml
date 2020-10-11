@@ -23,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.PlayService" />
+        <service android:name=".service.PlayService"
+            android:process=":service"/>
     </application>
 
 </manifest>

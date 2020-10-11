@@ -1,31 +1,27 @@
 package com.cere.csplayer.activity
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.cere.csplayer.Constants
 import com.cere.csplayer.content.MusicManager
 import com.cere.csplayer.control.PlayCallback
 import com.cere.csplayer.control.PlayControl
 import com.cere.csplayer.data.AppDatabase
 import com.cere.csplayer.data.SharePre
-import com.cere.csplayer.service.PlayService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 /**
  * Created by CheRevir on 2020/9/5
  */
-class PlayViewModel(application: Application) : AndroidViewModel(application),
-    PlayControl.OnServiceConnectionListener {
-    var control = PlayControl(application, PlayService::class.java, this)
-        private set
+class PlayViewModel(val control: PlayControl, val manager: MusicManager) :
+    ViewModel(),
+    PlayControl.OnConnectionListener {
     val musics =
         AppDatabase.instance.getMusicDao().queryAll(SharePre.getInt(Constants.LIST_ORDER, 1))
     val plays = AppDatabase.instance.getPlayDao().queryAll()
 
-    val manager = MusicManager(application)
     private var isFirst = true
     private var isScan = false
     private var isLoad = false
@@ -46,6 +42,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
     val shuffle = MutableLiveData(SharePre.getBoolean(Constants.MODE_SHUFFLE, false))
 
     init {
+        control.addListener(this)
         musics.observeForever {
             manager.musics = it
             scan()
@@ -57,6 +54,19 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
                 isReload = false
                 load()
             }
+        }
+    }
+
+    override fun onConnectChange(isConnected: Boolean) {
+        if (isConnected) {
+            control.registerCallback(Callback().callback)
+            Log.e("TAG", "PlayViewModel -> onServiceConnected: ")
+            load()
+        } else {
+            Log.e("TAG", "PlayViewModel -> onServiceDisconnected: ")
+            isFirst = true
+            isScan = false
+            isLoad = false
         }
     }
 
@@ -110,20 +120,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
-    override fun onServiceConnected() {
-        control.registerCallback(Callback().callback)
-        Log.e("TAG", "PlayViewModel -> onServiceConnected: ")
-        load()
-    }
-
-    override fun onServiceDisconnected() {
-        Log.e("TAG", "PlayViewModel -> onServiceDisconnected: ")
-        isFirst = true
-        isScan = false
-        isLoad = false
-        control = PlayControl(getApplication(), PlayService::class.java, this)
-    }
-
     private inner class Callback : PlayCallback() {
         override fun onPlay(isPlay: Boolean) {
             super.onPlay(isPlay)
@@ -139,11 +135,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application),
                     artist.postValue(it.artist)
                     album.postValue(it.album)
                     star.postValue(it.star)
-                    number.postValue("${position.value!! + 1}/${plays.value!!.size}")
+                    number.postValue("${position.value!! + 1}/${plays.value?.size}")
                 }
             }
             this@PlayViewModel.id.value = id
             SharePre.putInt(Constants.MUSIC_POSITION, position.value!!)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        control.removeListener(this)
     }
 }

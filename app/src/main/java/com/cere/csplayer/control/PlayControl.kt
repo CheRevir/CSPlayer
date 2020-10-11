@@ -14,16 +14,31 @@ import com.cere.csplayer.entity.Play
  * Created by CheRevir on 2020/9/5
  */
 class PlayControl(
-    context: Context,
-    service: Class<*>,
-    private val onServiceConnectionListener: OnServiceConnectionListener
+    private val context: Context,
+    private val service: Class<*>
 ) : ServiceConnection {
     private var iPlayControl: IPlayControl? = null
+    private val listeners = ArrayList<OnConnectionListener>()
+    var isConnected = false
+        private set
     var isConnecting = false
         private set
 
-    init {
+    fun addListener(listener: OnConnectionListener) {
+        listeners.add(listener)
+    }
+
+    fun removeListener(listener: OnConnectionListener) {
+        listeners.remove(listener)
+    }
+
+    fun connect() {
+        isConnecting = true
         context.bindService(Intent(context, service), this, Context.BIND_AUTO_CREATE)
+    }
+
+    fun disconnected() {
+        context.unbindService(this)
     }
 
     fun play() {
@@ -80,17 +95,22 @@ class PlayControl(
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         iPlayControl = IPlayControl.Stub.asInterface(service)
-        isConnecting = true
-        onServiceConnectionListener.onServiceConnected()
+        isConnected = true
+        isConnecting = false
+        listeners.forEach {
+            it.onConnectChange(isConnected)
+        }
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
+        isConnected = false
         isConnecting = false
-        onServiceConnectionListener.onServiceDisconnected()
+        listeners.forEach {
+            it.onConnectChange(isConnected)
+        }
     }
 
-    interface OnServiceConnectionListener {
-        fun onServiceConnected()
-        fun onServiceDisconnected()
+    interface OnConnectionListener {
+        fun onConnectChange(isConnected: Boolean)
     }
 }
